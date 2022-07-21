@@ -4,7 +4,7 @@ flowchart BT
     subgraph azr[AZURE france central]
         subgraph rsgrp[ressource groupe]
         bstn[Bastion]
-        ippr{{IP Privée}}
+        ippr{{IP Publique}}
         subgraph VMgitea[VM Gitea]
         gitea
         crt[carte réseau]
