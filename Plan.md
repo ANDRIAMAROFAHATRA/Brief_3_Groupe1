@@ -3,13 +3,18 @@
 flowchart BT
     subgraph azr[AZURE france central]
         subgraph rsgrp[ressource groupe]
+        subgraph sbvnt1[Sous réseau bastion]
         bstn[Bastion]
+        end
         ippr{{IP Publique}}
+    
+        subgraph sbvnt2[Sous réseau APP+BDD]
         subgraph VMgitea[VM Gitea]
         gitea
         crt[carte réseau]
         end
         DB[Base de donnée\nMySQL]
+        end
         end
     end
     subgraph dplmnt[ordinateur de déploiment]
