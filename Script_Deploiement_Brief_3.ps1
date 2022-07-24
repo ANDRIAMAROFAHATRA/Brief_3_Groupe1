@@ -29,7 +29,7 @@ az network vnet subnet create `
     -g GiteaFirst `
     --vnet-name GiteaVnet `
     --name GiteaSubnet `
-    --address-prefixes 10.az0.1.0/29
+    --address-prefixes 10.0.1.0/29
     if ($? -eq $false) {
         $erreur = "la création du Subnet GiteaSubnet a échoué"
         throw ''
