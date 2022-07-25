@@ -1,10 +1,21 @@
 $step = 0
+$Zone = francecentral
+$RessourceGroupName = GiteaFirst
+$VnetName = GiteaVnet
+$PlageIPVnet = 10.0.1.0/24
+$PlageIPBastion = 10.0.1.64/26
+$SubNetAppName = GiteaSubnet
+$PlageIPApp = 10.0.1.0/29
+$NameIPBastion = MyFirstPublicIpBastion
+$NameBastion = Bastion
+$NameDB = GiteaSQLsvr
+$NameUserDB = Gitea
 
 $error.Clear()
 try {
 
 if ($step -lt 1 ) {
-az group create -l francecentral -n GiteaFirst
+az group create -l $Zone -n $RessourceGroupName
     if ($? -eq $false) {
         throw 'la création du groupe de ressource GiteaFirst a échoué'
     }
@@ -12,46 +23,50 @@ az group create -l francecentral -n GiteaFirst
 
 if ($step -lt 2) {
 az network vnet create `
-    -g GiteaFirst `
-    -n GiteaVnet `
-    --address-prefix 10.0.1.0/24
+    -g $RessourceGroupName `
+    -n $VnetName `
+    --address-prefix $PlageIPVnet
     if ($? -eq $false) {
         throw 'la création du Vnet GiteaVnet a échoué'
     }
 }
 if ($step -lt 3) {
 az network vnet subnet create `
-    -g GiteaFirst `
-    --vnet-name GiteaVnet `
+    -g $RessourceGroupName `
+    --vnet-name $VnetName `
     --name AzureBastionSubnet `
-    --address-prefixes 10.0.1.64/26
+    --address-prefixes $PlageIPBastion
     if ($? -eq $false) {
         throw 'la création du Subnet SubnetBastion a échoué'
     }
 }
 if ($step -lt 4) {
 az network vnet subnet create `
-    -g GiteaFirst `
-    --vnet-name GiteaVnet `
-    --name GiteaSubnet `
-    --address-prefixes 10.0.1.0/29
+    -g $RessourceGroupName `
+    --vnet-name $VnetName `
+    --name $SubNetAppName `
+    --address-prefixes $PlageIPApp
     if ($? -eq $false) {
         throw 'la création du Subnet GiteaSubnet a échoué'
     }
 }
 if ($step -lt 5) {
 az network public-ip create `
-    -g GiteaFirst -n MyFirstPublicIpBastion --sku Standard -z 1
+    -g $RessourceGroupName `
+    -n $NameIPBastion `
+    --sku Standard -z 1
      if ($? -eq $false) {
         throw "la création de l'IP public Bastion a échoué"
     }
 }
 if ($step -lt 6) {
-    az network bastion create --only-show-errors -l francecentral `
-    -n Bastion `
-	--public-ip-address MyFirstPublicIpBastion `
-	-g GiteaFirst `
-    --vnet-name GiteaVnet
+    az network bastion create `
+    --only-show-errors `
+    -l $Zone `
+    -n $NameBastion `
+	--public-ip-address $NameIPBastion `
+	-g $RessourceGroupName `
+    --vnet-name $VnetName
      if ($? -eq $false) {
         throw 'la création du service Bastion a échoué'
     }
@@ -59,9 +74,9 @@ if ($step -lt 6) {
 }
 if ($step -lt 7) {
     az mysql server create -l francecentral `
-    -g GiteaFirst `
-    -n GiteaSQLsvr `
-    -u Gitea `
+    -g $RessourceGroupName `
+    -n $NameDB `
+    -u $NameUserDB `
     -p $Env:passwdSQL `
     --sku-name B_Gen5_1 `
     --ssl-enforcement Enabled `
