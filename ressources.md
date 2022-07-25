@@ -17,3 +17,14 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/tutorial-automate-
 
 # automatiques variable
 https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_automatic_variables?view=powershell-7.2
+
+# SQL
+https://docs.microsoft.com/fr-fr/azure/azure-sql/database/firewall-configure?view=azuresql
+https://docs.microsoft.com/fr-fr/azure/azure-sql/database/single-database-create-quickstart?view=azuresql&tabs=azure-portal
+
+# Bastion
+https://docs.microsoft.com/fr-fr/azure/bastion/bastion-overview
+
+# Doc scripts
+http://www.elephant.org.il/its-in-the-script/documenting-your-scripts
+https://guides.lib.berkeley.edu/how-to-write-good-documentation
