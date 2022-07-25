@@ -1,9 +1,9 @@
+$error.Clear()
 try {
 
 az group create -l francecentral -n GiteaFirst
     if ($? -eq $false) {
-        $erreur = "la création du groupe de ressource GiteaFirst a échoué"
-        throw ''
+        throw 'la création du groupe de ressource GiteaFirst a échoué'
     }
 
 az network vnet create `
@@ -11,8 +11,7 @@ az network vnet create `
     -n GiteaVnet `
     --address-prefix 10.0.1.0/24
     if ($? -eq $false) {
-        $erreur = "la création du Vnet GiteaVnet a échoué"
-        throw ''
+        throw 'la création du Vnet GiteaVnet a échoué'
     }
 
 az network vnet subnet create `
@@ -21,8 +20,7 @@ az network vnet subnet create `
     --name AzureBastionSubnet `
     --address-prefixes 10.0.1.64/26
     if ($? -eq $false) {
-        $erreur = "la création du Subnet SubnetBastion a échoué"
-        throw ''
+        throw 'la création du Subnet SubnetBastion a échoué'
     }
 
 az network vnet subnet create `
@@ -31,8 +29,7 @@ az network vnet subnet create `
     --name GiteaSubnet `
     --address-prefixes 10.0.1.0/29
     if ($? -eq $false) {
-        $erreur = "la création du Subnet GiteaSubnet a échoué"
-        throw ''
+        throw 'la création du Subnet GiteaSubnet a échoué'
     }
 
 az network public-ip create `
@@ -73,7 +70,8 @@ az network public-ip create `
 
 catch {
     Write-Host "In CATCH"
-    Write-Host $ErrorView
+    Write-Host $Error
     write-host $Erreur
+    write-host "les ressource Azure crées vont être supprimées:"
     #az group delete -n GiteaFirst -y
 }
