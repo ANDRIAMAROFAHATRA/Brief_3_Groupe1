@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 $step = 0
 
-=======
 $error.Clear()
->>>>>>> a2e41e77c955e534ac9716ba0c1a3f0a5484f757
 try {
 
 if ($step -lt 1 ) {
