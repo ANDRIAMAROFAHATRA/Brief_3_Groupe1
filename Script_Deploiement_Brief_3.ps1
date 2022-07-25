@@ -1,12 +1,15 @@
+<<<<<<< HEAD
 $step = 0
 
+=======
+$error.Clear()
+>>>>>>> a2e41e77c955e534ac9716ba0c1a3f0a5484f757
 try {
 
 if ($step -lt 1 ) {
 az group create -l francecentral -n GiteaFirst
     if ($? -eq $false) {
-        $erreur = "la création du groupe de ressource GiteaFirst a échoué"
-        throw ''
+        throw 'la création du groupe de ressource GiteaFirst a échoué'
     }
 }
 
@@ -16,8 +19,7 @@ az network vnet create `
     -n GiteaVnet `
     --address-prefix 10.0.1.0/24
     if ($? -eq $false) {
-        $erreur = "la création du Vnet GiteaVnet a échoué"
-        throw ''
+        throw 'la création du Vnet GiteaVnet a échoué'
     }
 }
 if ($step -lt 3) {
@@ -27,8 +29,7 @@ az network vnet subnet create `
     --name AzureBastionSubnet `
     --address-prefixes 10.0.1.64/26
     if ($? -eq $false) {
-        $erreur = "la création du Subnet SubnetBastion a échoué"
-        throw ''
+        throw 'la création du Subnet SubnetBastion a échoué'
     }
 }
 if ($step -lt 4) {
@@ -38,16 +39,14 @@ az network vnet subnet create `
     --name GiteaSubnet `
     --address-prefixes 10.0.1.0/29
     if ($? -eq $false) {
-        $erreur = "la création du Subnet GiteaSubnet a échoué"
-        throw ''
+        throw 'la création du Subnet GiteaSubnet a échoué'
     }
 }
 if ($step -lt 5) {
 az network public-ip create `
     -g GiteaFirst -n MyFirstPublicIpBastion --sku Standard -z 1
      if ($? -eq $false) {
-        $erreur = "la création de l'IP public Bastion a échoué"
-        throw ''
+        throw 'la création de l'IP public Bastion a échoué'
     }
 }
 if ($step -lt 6) {
@@ -57,8 +56,7 @@ if ($step -lt 6) {
 	-g GiteaFirst `
     --vnet-name GiteaVnet
      if ($? -eq $false) {
-        $erreur = "la création du service Bastion a échoué"
-        throw ''
+        throw 'la création du service Bastion a échoué'
     }
 }
 if ($step -lt 7) {
@@ -77,15 +75,14 @@ if ($step -lt 7) {
     --tags "key=value" `
     --version 5.7
     if ($? -eq $false) {
-        $erreur = "la création du serveur MYSQL a échoué"
-        throw ''
+        throw 'la création du serveur MYSQL a échoué'
     }
 }
 }
 
 catch {
     Write-Host "In CATCH"
-    Write-Host $ErrorView
-    write-host $Erreur
+    Write-Host $Error
+    write-host "les ressource Azure crées vont être supprimées:"
     #az group delete -n GiteaFirst -y
 }
