@@ -43,29 +43,30 @@ if ($step -lt 5) {
 az network public-ip create `
     -g GiteaFirst -n MyFirstPublicIpBastion --sku Standard -z 1
      if ($? -eq $false) {
-        throw 'la création de l'IP public Bastion a échoué'
+        throw "la création de l'IP public Bastion a échoué"
     }
 }
 if ($step -lt 6) {
     az network bastion create --only-show-errors -l francecentral `
-     -n Bastion `
+    -n Bastion `
 	--public-ip-address MyFirstPublicIpBastion `
 	-g GiteaFirst `
     --vnet-name GiteaVnet
      if ($? -eq $false) {
         throw 'la création du service Bastion a échoué'
     }
+
 }
 if ($step -lt 7) {
     az mysql server create -l francecentral `
     -g GiteaFirst `
     -n GiteaSQLsvr `
     -u Gitea `
-     -p $Env:passwdSQL `
-     --sku-name B_Gen5_1 `
-     --ssl-enforcement Enabled `
-     --minimal-tls-version TLS1_0 `
-     --public-network-access Disabled `
+    -p $Env:passwdSQL `
+    --sku-name B_Gen5_1 `
+    --ssl-enforcement Enabled `
+    --minimal-tls-version TLS1_0 `
+    --public-network-access Disabled `
 	--backup-retention 14 `
     --geo-redundant-backup Enabled `
     --storage-size 51200 `
