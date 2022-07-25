@@ -1,11 +1,19 @@
+<<<<<<< HEAD
+$step = 0
+
+=======
 $error.Clear()
+>>>>>>> a2e41e77c955e534ac9716ba0c1a3f0a5484f757
 try {
 
+if ($step -lt 1 ) {
 az group create -l francecentral -n GiteaFirst
     if ($? -eq $false) {
         throw 'la création du groupe de ressource GiteaFirst a échoué'
     }
+}
 
+if ($step -lt 2) {
 az network vnet create `
     -g GiteaFirst `
     -n GiteaVnet `
@@ -13,7 +21,8 @@ az network vnet create `
     if ($? -eq $false) {
         throw 'la création du Vnet GiteaVnet a échoué'
     }
-
+}
+if ($step -lt 3) {
 az network vnet subnet create `
     -g GiteaFirst `
     --vnet-name GiteaVnet `
@@ -22,7 +31,8 @@ az network vnet subnet create `
     if ($? -eq $false) {
         throw 'la création du Subnet SubnetBastion a échoué'
     }
-
+}
+if ($step -lt 4) {
 az network vnet subnet create `
     -g GiteaFirst `
     --vnet-name GiteaVnet `
@@ -31,13 +41,15 @@ az network vnet subnet create `
     if ($? -eq $false) {
         throw 'la création du Subnet GiteaSubnet a échoué'
     }
-
+}
+if ($step -lt 5) {
 az network public-ip create `
     -g GiteaFirst -n MyFirstPublicIpBastion --sku Standard -z 1
      if ($? -eq $false) {
         throw 'la création de l'IP public Bastion a échoué'
     }
-
+}
+if ($step -lt 6) {
     az network bastion create --only-show-errors -l francecentral `
      -n Bastion `
 	--public-ip-address MyFirstPublicIpBastion `
@@ -46,6 +58,8 @@ az network public-ip create `
      if ($? -eq $false) {
         throw 'la création du service Bastion a échoué'
     }
+}
+if ($step -lt 7) {
     az mysql server create -l francecentral `
     -g GiteaFirst `
     -n GiteaSQLsvr `
@@ -63,6 +77,7 @@ az network public-ip create `
     if ($? -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
     }
+}
 }
 
 catch {
