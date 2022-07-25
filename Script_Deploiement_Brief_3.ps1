@@ -35,8 +35,7 @@ az network vnet subnet create `
 az network public-ip create `
     -g GiteaFirst -n MyFirstPublicIpBastion --sku Standard -z 1
      if ($? -eq $false) {
-        $erreur = "la création de l'IP public Bastion a échoué"
-        throw ''
+        throw 'la création de l'IP public Bastion a échoué'
     }
 
     az network bastion create --only-show-errors -l francecentral `
@@ -45,8 +44,7 @@ az network public-ip create `
 	-g GiteaFirst `
     --vnet-name GiteaVnet
      if ($? -eq $false) {
-        $erreur = "la création du service Bastion a échoué"
-        throw ''
+        throw 'la création du service Bastion a échoué'
     }
     az mysql server create -l francecentral `
     -g GiteaFirst `
@@ -63,15 +61,13 @@ az network public-ip create `
     --tags "key=value" `
     --version 5.7
     if ($? -eq $false) {
-        $erreur = "la création du serveur MYSQL a échoué"
-        throw ''
+        throw 'la création du serveur MYSQL a échoué'
     }
 }
 
 catch {
     Write-Host "In CATCH"
     Write-Host $Error
-    write-host $Erreur
     write-host "les ressource Azure crées vont être supprimées:"
     #az group delete -n GiteaFirst -y
 }
