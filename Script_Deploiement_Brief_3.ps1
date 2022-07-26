@@ -2,7 +2,7 @@ $Month = Get-Date -Format 'MMMMMM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $allOutput = "$day $Month $Year`n`n"
-$Log_Path = ../Deploiement_Gitea_$Year$Month$Day.log
+$Log_Path = "../Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 
 $Zone = 'francecentral'
