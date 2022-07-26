@@ -1,4 +1,5 @@
 $step = 0
+
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -12,79 +13,81 @@ $NameDB = 'GiteaSQLsvr'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 
-$error.Clear()
+
 try {
 
 if ($step -lt 1 ) {
-az group create -l $Zone -n $RessourceGroupName
+$allOutput = az group create .\.git `
+-l $Zone `
+-n $RessourceGroupName 2>>&1
     if ($? -eq $false) {
         throw 'la création du groupe de ressource GiteaFirst a échoué'
     }
 }
 
 if ($step -lt 2) {
-az network vnet create `
+$allOutput = az network vnet create `
     -g $RessourceGroupName `
     -n $VnetName `
-    --address-prefix $PlageIPVnet
+    --address-prefix $PlageIPVnet 2>>&1
     if ($? -eq $false) {
         throw 'la création du Vnet GiteaVnet a échoué'
     }
 }
 if ($step -lt 3) {
-az network vnet subnet create `
+$allOutput = az network vnet subnet create `
     -g $RessourceGroupName `
     --vnet-name $VnetName `
     --name AzureBastionSubnet `
-    --address-prefixes $PlageIPBastion
+    --address-prefixes $PlageIPBastion 2>>&1
     if ($? -eq $false) {
         throw 'la création du Subnet SubnetBastion a échoué'
     }
 }
 if ($step -lt 4) {
-az network vnet subnet create `
+$allOutput = az network vnet subnet create `
     -g $RessourceGroupName `
     --vnet-name $VnetName `
     --name $SubNetAppName `
-    --address-prefixes $PlageIPApp
+    --address-prefixes $PlageIPApp 2>>&1
     if ($? -eq $false) {
         throw 'la création du Subnet GiteaSubnet a échoué'
     }
 }
 if ($step -lt 5) {
-az network public-ip create `
+$allOutput = az network public-ip create `
     -g $RessourceGroupName `
     -n $NameIPBastion `
-    --sku Standard -z 1
+    --sku Standard -z 1 2>>&1
      if ($? -eq $false) {
         throw "la création de l'IP public Bastion a échoué"
     }
 }
 if ($step -lt 6) {
-    az network bastion create `
+$allOutput = az network bastion create `
     --only-show-errors `
     -l $Zone `
     -n $NameBastion `
 	--public-ip-address $NameIPBastion `
 	-g $RessourceGroupName `
-    --vnet-name $VnetName
+    --vnet-name $VnetName 2>>&1
      if ($? -eq $false) {
         throw 'la création du service Bastion a échoué'
     }
 
 }
 if ($step -lt 7) {
-az vm create -n $NameVM -g $RessourceGroupName `
+$allOutput = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
-	--public-ip-sku Standard
+	--public-ip-sku Standard 2>>&1
 if ($? -eq $false) {
         throw 'la création de la VM a échoué'
     }
 }
 	
 if ($step -lt 8) {
-    az mysql server create -l $Zone `
+$allOutput = az mysql server create -l $Zone `
     -g $RessourceGroupName `
     -n $NameDB `
     -u $NameUserDB `
@@ -98,7 +101,7 @@ if ($step -lt 8) {
     --storage-size 51200 `
     --tags "key=value" `
     --version 5.7 `
-    --only-show-errors 
+    --only-show-errors 2>>&1
     if ($? -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
     }
@@ -106,8 +109,11 @@ if ($step -lt 8) {
 }
 
 catch {
+    $stderr = $allOutput | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
+    $stdout = $allOutput | ?{ $_ -isnot [System.Management.Automation.ErrorRecord] }
     Write-Host "In CATCH"
-    Write-Host $Error
+    Write-Host $stderr
+    $stdout > ../test.log
     write-host "les ressource Azure créées vont être supprimées:"
     #az group delete -n GiteaFirst -y
 }
