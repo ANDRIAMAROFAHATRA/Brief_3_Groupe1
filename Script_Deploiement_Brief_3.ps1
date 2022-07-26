@@ -1,8 +1,8 @@
+Clear-Variable -n allOutput
 $Month = Get-Date -Format 'MMMMMM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $allOutput = "$day $Month $Year`n`n"
-Clear-Variable -n allOutput
 $Log_Path = 
 $step = 0
 
