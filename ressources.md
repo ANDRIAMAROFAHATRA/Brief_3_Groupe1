@@ -28,3 +28,6 @@ https://docs.microsoft.com/fr-fr/azure/bastion/bastion-overview
 # Doc scripts
 http://www.elephant.org.il/its-in-the-script/documenting-your-scripts
 https://guides.lib.berkeley.edu/how-to-write-good-documentation
+
+# Backup
+https://www.sqlshack.com/understanding-backups-for-azure-sql-database/
