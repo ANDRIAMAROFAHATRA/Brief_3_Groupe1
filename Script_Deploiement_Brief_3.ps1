@@ -1,4 +1,4 @@
-$step = 6
+$step = 0
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
