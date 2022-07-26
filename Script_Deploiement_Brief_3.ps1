@@ -2,7 +2,7 @@ $Month = Get-Date -Format 'MMMMMM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $allOutput = "$day $Month $Year`n`n"
-$Log_Path = 
+$Log_Path = "../Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 
 $Zone = 'francecentral'
@@ -149,7 +149,7 @@ catch {
     $stderr = $allOutput | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
     Write-Host "In CATCH"
     Write-Host $stderr -ForegroundColor Red
-    $allOutput > ../Deploiement_Gitea_$Year$Month$Day.log
+    $allOutput > $Log_Path
     write-host "les ressource Azure créées vont être supprimées:" -ForegroundColor DarkRed
     #az group delete -n GiteaFirst -y
 }
