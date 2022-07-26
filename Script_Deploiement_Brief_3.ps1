@@ -96,6 +96,6 @@ if ($step -lt 7) {
 catch {
     Write-Host "In CATCH"
     Write-Host $Error
-    write-host "les ressource Azure crées vont être supprimées:"
+    write-host "les ressource Azure créées vont être supprimées:"
     #az group delete -n GiteaFirst -y
 }
