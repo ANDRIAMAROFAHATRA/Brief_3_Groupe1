@@ -1,4 +1,3 @@
-Clear-Variable -n allOutput
 $Month = Get-Date -Format 'MMMMMM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
