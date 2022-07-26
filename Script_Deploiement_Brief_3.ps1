@@ -17,77 +17,105 @@ $NameVM = 'VMGitea'
 try {
 
 if ($step -lt 1 ) {
-$allOutput = az group create .\.git `
+$sortie = az group create `
 -l $Zone `
--n $RessourceGroupName 2>>&1
+-n $RessourceGroupName 2>&1
+$allOutput = $sortie
     if ($? -eq $false) {
         throw 'la création du groupe de ressource GiteaFirst a échoué'
+    }
+    else {
+        Write-Host "Le groupe de ressource a été créé avec succès"
     }
 }
 
 if ($step -lt 2) {
-$allOutput = az network vnet create `
+$sortie = az network vnet create `
     -g $RessourceGroupName `
     -n $VnetName `
-    --address-prefix $PlageIPVnet 2>>&1
+    --address-prefix $PlageIPVnet 2>&1
+    $allOutput += $sortie
     if ($? -eq $false) {
         throw 'la création du Vnet GiteaVnet a échoué'
     }
+    else {
+        Write-Host "Le Vnet a été créé avec succès"
+    }
 }
 if ($step -lt 3) {
-$allOutput = az network vnet subnet create `
+$sortie = az network vnet subnet create `
     -g $RessourceGroupName `
     --vnet-name $VnetName `
     --name AzureBastionSubnet `
-    --address-prefixes $PlageIPBastion 2>>&1
+    --address-prefixes $PlageIPBastion 2>&1
+    $allOutput += $sortie
     if ($? -eq $false) {
         throw 'la création du Subnet SubnetBastion a échoué'
     }
+    else {
+        Write-Host "Le subnet Bastion a été créé avec succès"
+    }
 }
 if ($step -lt 4) {
-$allOutput = az network vnet subnet create `
+$sortie = az network vnet subnet create `
     -g $RessourceGroupName `
     --vnet-name $VnetName `
     --name $SubNetAppName `
-    --address-prefixes $PlageIPApp 2>>&1
+    --address-prefixes $PlageIPApp 2>&1
+    $allOutput += $sortie
     if ($? -eq $false) {
         throw 'la création du Subnet GiteaSubnet a échoué'
     }
+    else {
+        Write-Host "Le subnet de Gitea a été créé avec succès"
+    }
 }
 if ($step -lt 5) {
-$allOutput = az network public-ip create `
+$sortie = az network public-ip create `
     -g $RessourceGroupName `
     -n $NameIPBastion `
-    --sku Standard -z 1 2>>&1
+    --sku Standard -z 1 2>&1
+    $allOutput += $sortie
      if ($? -eq $false) {
         throw "la création de l'IP public Bastion a échoué"
     }
+    else {
+        Write-Host "L'IP publique bastion a été créé avec succès"
+    }
 }
 if ($step -lt 6) {
-$allOutput = az network bastion create `
+$sortie = az network bastion create `
     --only-show-errors `
     -l $Zone `
     -n $NameBastion `
 	--public-ip-address $NameIPBastion `
 	-g $RessourceGroupName `
-    --vnet-name $VnetName 2>>&1
+    --vnet-name $VnetName 2>&1
+    $allOutput += $sortie
      if ($? -eq $false) {
         throw 'la création du service Bastion a échoué'
+    }
+    else {
+        Write-Host "Le bastion a été créé avec succès"
     }
 
 }
 if ($step -lt 7) {
-$allOutput = az vm create -n $NameVM -g $RessourceGroupName `
+$sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
-	--public-ip-sku Standard 2>>&1
+	--public-ip-sku Standard 2>&1
+    $allOutput += $sortie
 if ($? -eq $false) {
         throw 'la création de la VM a échoué'
+    }
+    else {
+        Write-Host "La VM a été créé avec succès"
     }
 }
 	
 if ($step -lt 8) {
-$allOutput = az mysql server create -l $Zone `
+$sortie = az mysql server create -l $Zone `
     -g $RessourceGroupName `
     -n $NameDB `
     -u $NameUserDB `
@@ -101,9 +129,13 @@ $allOutput = az mysql server create -l $Zone `
     --storage-size 51200 `
     --tags "key=value" `
     --version 5.7 `
-    --only-show-errors 2>>&1
+    --only-show-errors 2>&1
+    $allOutput += $sortie
     if ($? -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
+    }
+    else {
+        Write-Host "Le database a été créé avec succès"
     }
 }
 }
@@ -112,8 +144,8 @@ catch {
     $stderr = $allOutput | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
     $stdout = $allOutput | ?{ $_ -isnot [System.Management.Automation.ErrorRecord] }
     Write-Host "In CATCH"
-    Write-Host $stderr
+    Write-Host $stderr -ForegroundColor Red
     $stdout > ../test.log
-    write-host "les ressource Azure créées vont être supprimées:"
+    write-host "les ressource Azure créées vont être supprimées:" -ForegroundColor DarkRed
     #az group delete -n GiteaFirst -y
 }
