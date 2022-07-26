@@ -27,7 +27,7 @@ $allOutput = `n $sortie `n
         throw 'la création du groupe de ressource GiteaFirst a échoué'
     }
     else {
-        Write-Host "Le groupe de ressource a été créé avec succès"
+        Write-Host "Le groupe de ressource a été créé avec succès" -ForegroundColor Magenta
     }
 }
 
@@ -41,7 +41,7 @@ if ($step -lt 2) {
         throw 'la création du Vnet GiteaVnet a échoué'
     }
     else {
-        Write-Host "Le Vnet a été créé avec succès"
+        Write-Host "Le Vnet a été créé avec succès"-ForegroundColor Cyan
     }
 }
 if ($step -lt 3) {
@@ -55,7 +55,7 @@ $sortie = az network vnet subnet create `
         throw 'la création du Subnet SubnetBastion a échoué'
     }
     else {
-        Write-Host "Le subnet Bastion a été créé avec succès"
+        Write-Host "Le subnet Bastion a été créé avec succès" -ForegroundColor Yellow
     }
 }
 if ($step -lt 4) {
@@ -69,7 +69,7 @@ $sortie = az network vnet subnet create `
         throw 'la création du Subnet GiteaSubnet a échoué'
     }
     else {
-        Write-Host "Le subnet de Gitea a été créé avec succès"
+        Write-Host "Le subnet de Gitea a été créé avec succès" -ForegroundColor Green
     }
 }
 if ($step -lt 5) {
@@ -82,7 +82,7 @@ $sortie = az network public-ip create `
         throw "la création de l'IP public Bastion a échoué"
     }
     else {
-        Write-Host "L'IP publique bastion a été créé avec succès"
+        Write-Host "L'IP publique bastion a été créé avec succès" -ForegroundColor DarkCyan
     }
 }
 if ($step -lt 6) {
@@ -98,7 +98,7 @@ $sortie = az network bastion create `
         throw 'la création du service Bastion a échoué'
     }
     else {
-        Write-Host "Le bastion a été créé avec succès"
+        Write-Host "Le bastion a été créé avec succès" -ForegroundColor DarkMagenta
     }
 
 }
@@ -112,7 +112,7 @@ if ($? -eq $false) {
         throw 'la création de la VM a échoué'
     }
     else {
-        Write-Host "La VM a été créé avec succès"
+        Write-Host "La VM a été créé avec succès" -ForegroundColor Yellow
     }
 }
 	
@@ -137,7 +137,7 @@ $sortie = az mysql server create -l $Zone `
         throw 'la création du serveur MYSQL a échoué'
     }
     else {
-        Write-Host "Le database a été créé avec succès"
+        Write-Host "Le database a été créé avec succès" -ForegroundColor Green
     }
 }
 }
