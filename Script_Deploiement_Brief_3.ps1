@@ -1,4 +1,4 @@
-$step = 0
+$step = 6
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -10,6 +10,7 @@ $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
 $NameDB = 'GiteaSQLsvr'
 $NameUserDB = 'Gitea'
+$NameVM = 'VMGitea'
 
 $error.Clear()
 try {
@@ -73,7 +74,7 @@ if ($step -lt 6) {
 
 }
 if ($step -lt 7) {
-az vm create -n VMGitea -g GiteaFirst `
+az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard
@@ -96,7 +97,8 @@ if ($step -lt 8) {
     --geo-redundant-backup Disabled `
     --storage-size 51200 `
     --tags "key=value" `
-    --version 5.7
+    --version 5.7 `
+    --only-show-errors 
     if ($? -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
     }
