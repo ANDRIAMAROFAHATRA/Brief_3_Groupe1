@@ -1,15 +1,15 @@
 $step = 0
-$Zone = francecentral
-$RessourceGroupName = GiteaFirst
-$VnetName = GiteaVnet
-$PlageIPVnet = 10.0.1.0/24
-$PlageIPBastion = 10.0.1.64/26
-$SubNetAppName = GiteaSubnet
-$PlageIPApp = 10.0.1.0/28
-$NameIPBastion = MyFirstPublicIpBastion
-$NameBastion = Bastion
-$NameDB = GiteaSQLsvr
-$NameUserDB = Gitea
+$Zone = 'francecentral'
+$RessourceGroupName = 'GiteaFirst'
+$VnetName = 'GiteaVnet'
+$PlageIPVnet = '10.0.1.0/24'
+$PlageIPBastion = '10.0.1.64/26'
+$SubNetAppName = 'GiteaSubnet'
+$PlageIPApp = '10.0.1.0/28'
+$NameIPBastion = 'MyFirstPublicIpBastion'
+$NameBastion = 'Bastion'
+$NameDB = 'GiteaSQLsvr'
+$NameUserDB = 'Gitea'
 
 $error.Clear()
 try {
@@ -73,7 +73,17 @@ if ($step -lt 6) {
 
 }
 if ($step -lt 7) {
-    az mysql server create -l francecentral `
+az vm create -n VMGitea -g GiteaFirst `
+	--image UbuntuLTS `
+	--private-ip-address 10.0.1.4 `
+	--public-ip-sku Standard
+if ($? -eq $false) {
+        throw 'la création de la VM a échoué'
+    }
+}
+	
+if ($step -lt 8) {
+    az mysql server create -l $Zone `
     -g $RessourceGroupName `
     -n $NameDB `
     -u $NameUserDB `
@@ -83,7 +93,7 @@ if ($step -lt 7) {
     --minimal-tls-version TLS1_0 `
     --public-network-access Disabled `
 	--backup-retention 14 `
-    --geo-redundant-backup Enabled `
+    --geo-redundant-backup Disabled `
     --storage-size 51200 `
     --tags "key=value" `
     --version 5.7
