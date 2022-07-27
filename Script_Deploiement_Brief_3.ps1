@@ -1,19 +1,11 @@
 #az extension add -n ssh
 
-<<<<<<< HEAD
-=======
 $PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
->>>>>>> f7adab4fc7659fe68b4fcde600fa29be99e30dba
-
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
-<<<<<<< HEAD
-$allOutput = "$day $Month $Year`n`n"
-=======
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`n`n"
->>>>>>> f7adab4fc7659fe68b4fcde600fa29be99e30dba
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 $Zone = 'francecentral'
@@ -157,13 +149,8 @@ $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard 2>&1 `
-<<<<<<< HEAD
     --data-disk-sizes-gb 32 `
     --size Standard_B2s
-=======
-    --size Standard_B2s `
-    --data-disk-sizes-gb 32 
->>>>>>> f7adab4fc7659fe68b4fcde600fa29be99e30dba
     $echec = $?
     $allOutput += "`n$sortie`n"
 if ($echec -eq $false) {
@@ -223,9 +210,5 @@ catch {
     Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
     write-host "les ressource Azure créées vont être supprimées:" -ForegroundColor DarkRed
-<<<<<<< HEAD
     #az group delete -n $RessourceGroupName -y
-=======
-    az group delete -n $RessourceGroupName -y
->>>>>>> f7adab4fc7659fe68b4fcde600fa29be99e30dba
 }
