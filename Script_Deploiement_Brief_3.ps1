@@ -1,14 +1,23 @@
 #az extension add -n ssh
 
+<<<<<<< HEAD
+=======
+$PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
+>>>>>>> f7adab4fc7659fe68b4fcde600fa29be99e30dba
 
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
+<<<<<<< HEAD
 $allOutput = "$day $Month $Year`n`n"
+=======
+$hour = Get-Date -Format "HH:mm"
+$allOutput = "$hour`n`n"
+>>>>>>> f7adab4fc7659fe68b4fcde600fa29be99e30dba
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 $Zone = 'francecentral'
-$RessourceGroupName = 'GiteaFirst'
+$RessourceGroupName = 'Gitea_First'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
@@ -23,6 +32,10 @@ $NameVM = 'VMGitea'
 
 try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
+if ($Env:passwdSQL = $NULL) {
+    Write-Host 'Avez vous mis le mot de passe? NON. Honte à vous. Try again.'
+}
+
 if ($step -lt 1 ) {
 $sortie = az group create `
 -l $Zone `
@@ -144,8 +157,13 @@ $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard 2>&1 `
+<<<<<<< HEAD
     --data-disk-sizes-gb 32 `
     --size Standard_B2s
+=======
+    --size Standard_B2s `
+    --data-disk-sizes-gb 32 
+>>>>>>> f7adab4fc7659fe68b4fcde600fa29be99e30dba
     $echec = $?
     $allOutput += "`n$sortie`n"
 if ($echec -eq $false) {
@@ -181,7 +199,22 @@ $sortie = az mysql server create -l $Zone `
         Write-Host "Le database a été créé avec succès" -ForegroundColor Green
     }
 }
-#$allOutput >> "$Log_Path"
+
+#----------------------OUVERTURE DES PORTS----------------------------
+if ($step -lt 10) {
+    $sortie = az vm open-port  -n $NameVM -g $RessourceGroupName `
+        --port 80
+        $echec = $?
+        $allOutput += "`n$sortie`n"
+    if ($echec -eq $false) {
+            throw 'Ouverture des ports a échoué'
+        }
+        else {
+            Write-Host "Les ports ont été créés avec succès" -ForegroundColor Yellow
+        }
+    }
+
+    $allOutput >> "$Log_Path"
 }
 
 catch {
@@ -190,5 +223,9 @@ catch {
     Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
     write-host "les ressource Azure créées vont être supprimées:" -ForegroundColor DarkRed
+<<<<<<< HEAD
     #az group delete -n $RessourceGroupName -y
+=======
+    az group delete -n $RessourceGroupName -y
+>>>>>>> f7adab4fc7659fe68b4fcde600fa29be99e30dba
 }
