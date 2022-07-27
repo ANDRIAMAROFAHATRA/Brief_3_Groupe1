@@ -1,13 +1,12 @@
 #az extension add -n ssh
 
-chcp 65001
 
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $allOutput = "$day $Month $Year`n`n"
-$Log_Path = "C:\Users\utilisateur\Desktop\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 7
+$Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
+$step = 0
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -128,8 +127,7 @@ $IdBastion = az network bastion list --only-show-errors -g $RessourceGroupName -
 
 #---------------------Tunnelling bastion ------------------------------
 if ($step -lt 7) {
-$sortie = az resource update --ids $IdBastion `
-    --set properties.enableTunneling=True
+$sortie = az resource update --ids $IdBastion --set properties.enableTunneling=True
     $echec = $?
     $allOutput += "`n$sortie`n"
 if ($echec -eq $false) {
@@ -146,7 +144,8 @@ $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard 2>&1 `
-    --data-disk-sizes-gb 32 
+    --data-disk-sizes-gb 32 `
+    --size Standard_B2s
     $echec = $?
     $allOutput += "`n$sortie`n"
 if ($echec -eq $false) {
@@ -191,5 +190,5 @@ catch {
     Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
     write-host "les ressource Azure créées vont être supprimées:" -ForegroundColor DarkRed
-    #az group delete -n GiteaFirst -y
+    #az group delete -n $RessourceGroupName -y
 }
