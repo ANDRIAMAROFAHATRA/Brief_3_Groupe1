@@ -5,7 +5,8 @@ $PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
-$allOutput = "$day $Month $Year`n`n"
+$hour = Get-Date -Format "HH:mm"
+$allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 $Zone = 'francecentral'
@@ -25,7 +26,7 @@ $NameVM = 'VMGitea'
 try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
 if ($Env:passwdSQL = $NULL) {
-    throw 'Avez vous mis le mot de passe? NON. Honte à vous. Try again.'
+    Write-Host 'Avez vous mis le mot de passe? NON. Honte à vous. Try again.'
 }
 
 if ($step -lt 1 ) {
@@ -187,7 +188,22 @@ $sortie = az mysql server create -l $Zone `
         Write-Host "Le database a été créé avec succès" -ForegroundColor Green
     }
 }
-#$allOutput >> "$Log_Path"
+
+#----------------------OUVERTURE DES PORTS----------------------------
+if ($step -lt 10) {
+    $sortie = az vm open-port  -n $NameVM -g $RessourceGroupName `
+        --port 80
+        $echec = $?
+        $allOutput += "`n$sortie`n"
+    if ($echec -eq $false) {
+            throw 'Ouverture des ports a échoué'
+        }
+        else {
+            Write-Host "Les ports ont été créés avec succès" -ForegroundColor Yellow
+        }
+    }
+
+    $allOutput >> "$Log_Path"
 }
 
 catch {
