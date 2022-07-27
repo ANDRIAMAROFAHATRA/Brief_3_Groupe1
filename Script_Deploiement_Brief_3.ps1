@@ -1,6 +1,7 @@
 #az extension add -n ssh
 
 $PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
+
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
@@ -9,7 +10,7 @@ $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 $Zone = 'francecentral'
-$RessourceGroupName = 'Gitea_First'
+$RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
