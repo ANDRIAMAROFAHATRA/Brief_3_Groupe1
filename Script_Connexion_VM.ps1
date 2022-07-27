@@ -9,9 +9,6 @@ $NameBastion = 'Bastion'
 
 
 $Id_VM1 = az vm list -g $RessourceGroupName --query [0].id
-<<<<<<< HEAD
 
 az network bastion ssh --auth-type ssh-key --ssh-key $Rsa_Path_Local --username utilisateur -g $RessourceGroupName --target-resource-id $Id_VM1 -n $NameBastion
-=======
-az network bastion ssh --auth-type ssh-key --ssh-key $Rsa_Path_Local --username utilisateur -g $RessourceGroupName --target-resource-id $Id_VM1 -n $NameBastion
->>>>>>> 707b48ca8f1e760cd4c29cfeba1df8cd6dc4ee94
+
