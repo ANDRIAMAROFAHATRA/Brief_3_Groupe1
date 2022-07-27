@@ -1,10 +1,12 @@
-$Month = Get-Date -Format 'MMMMMM'
+#az extension add -n ssh
+
+
+$Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $allOutput = "$day $Month $Year`n`n"
-$Log_Path = "../Deploiement_Gitea_$Year$Month$Day.log"
-$step = 0
-
+$Log_Path = "C:\Users\utilisateur\Desktop\Deploiement_Gitea_$Year$Month$Day.log"
+$step = 7
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -20,7 +22,7 @@ $NameVM = 'VMGitea'
 
 
 try {
-
+#-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
 if ($step -lt 1 ) {
 $sortie = az group create `
 -l $Zone `
@@ -47,6 +49,8 @@ if ($step -lt 2) {
         Write-Host "Le Vnet a été créé avec succès"-ForegroundColor Cyan
     }
 }
+
+#-------------------------CREATION DES DEUX SUBNETS ---------------------------------------
 if ($step -lt 3) {
 $sortie = az network vnet subnet create `
     -g $RessourceGroupName `
@@ -75,6 +79,8 @@ $sortie = az network vnet subnet create `
         Write-Host "Le subnet de Gitea a été créé avec succès" -ForegroundColor Green
     }
 }
+
+#--------------------------Creation IP PUBLIC BASTION------------------------------
 if ($step -lt 5) {
 $sortie = az network public-ip create `
     -g $RessourceGroupName `
@@ -88,6 +94,9 @@ $sortie = az network public-ip create `
         Write-Host "L'IP publique bastion a été créé avec succès" -ForegroundColor DarkCyan
     }
 }
+
+#---------------------------------CREATION BASTION ---------------------
+
 if ($step -lt 6) {
 $sortie = az network bastion create `
     --only-show-errors `
@@ -105,11 +114,31 @@ $sortie = az network bastion create `
     }
 
 }
+
+#------------------FIND ID BASTION ----------------------------
+
+$IdBastion = az network bastion list --only-show-errors -g $RessourceGroupName --query "[0].id"
+
+#---------------------Tunnelling bastion ------------------------------
 if ($step -lt 7) {
+$sortie = az resource update --ids $IdBastion `
+    --set properties.enableTunneling=True
+    $allOutput += "`n$sortie`n"
+if ($? -eq $false) {
+        throw 'Activation du tunnel Bastion échoué'
+    }
+    else {
+        Write-Host "Activation du tunnel Bastion avec succès" -ForegroundColor Green
+    }
+}
+
+#----------------------CREATION DE LA VM GITEA----------------------------
+if ($step -lt 8) {
 $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
-	--public-ip-sku Standard 2>&1
+	--public-ip-sku Standard 2>&1 `
+    --data-disk-sizes-gb 32 
     $allOutput += "`n$sortie`n"
 if ($? -eq $false) {
         throw 'la création de la VM a échoué'
@@ -118,8 +147,8 @@ if ($? -eq $false) {
         Write-Host "La VM a été créé avec succès" -ForegroundColor Yellow
     }
 }
-	
-if ($step -lt 8) {
+#----------------CREATION DE MYSQL SERVER------------------------	
+if ($step -lt 9) {
 $sortie = az mysql server create -l $Zone `
     -g $RessourceGroupName `
     -n $NameDB `
@@ -143,13 +172,14 @@ $sortie = az mysql server create -l $Zone `
         Write-Host "Le database a été créé avec succès" -ForegroundColor Green
     }
 }
+#$allOutput >> "$Log_Path"
 }
 
 catch {
     $stderr = $allOutput | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
     Write-Host "In CATCH"
     Write-Host $stderr -ForegroundColor Red
-    $allOutput > $Log_Path
+    $allOutput >> "$Log_Path"
     write-host "les ressource Azure créées vont être supprimées:" -ForegroundColor DarkRed
     #az group delete -n GiteaFirst -y
 }
