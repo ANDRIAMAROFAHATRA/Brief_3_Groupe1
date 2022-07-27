@@ -8,7 +8,7 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 0
+$step = 9
 $Zone = 'francecentral'
 $RessourceGroupName = 'Gitea_First'
 $VnetName = 'GiteaVnet'
@@ -18,16 +18,16 @@ $SubNetAppName = 'GiteaSubnet'
 $PlageIPApp = '10.0.1.0/28'
 $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
-$NameDB = 'GiteaSQLsvr'
+$NameDB = 'GiteaSQLsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 
 
 try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
-if ($Env:passwdSQL = $NULL) {
-    Write-Host 'Avez vous mis le mot de passe? NON. Honte à vous. Try again.'
-}
+# if ($Env:passwdSQL = $NULL) {
+#     Write-Host 'Avez vous mis le mot de passe? NON. Honte à vous. Try again.'
+# }
 
 if ($step -lt 1 ) {
 $sortie = az group create `
@@ -185,7 +185,7 @@ $sortie = az mysql server create -l $Zone `
         throw 'la création du serveur MYSQL a échoué'
     }
     else {
-        Write-Host "Le database a été créé avec succès" -ForegroundColor Green
+        Write-Host "La database a été créée avec succès" -ForegroundColor Green
     }
 }
 
@@ -203,7 +203,7 @@ if ($step -lt 10) {
         }
     }
 
-    $allOutput >> "$Log_Path"
+$allOutput >> "$Log_Path"
 }
 
 catch {
@@ -211,6 +211,6 @@ catch {
     Write-Host "In CATCH"
     Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
-    write-host "les ressource Azure créées vont être supprimées:" -ForegroundColor DarkRed
-    az group delete -n $RessourceGroupName -y
+    write-host "les ressource Azure créées vont être supprimées" -ForegroundColor DarkRed
+    #az group delete -n $RessourceGroupName -y
 }
