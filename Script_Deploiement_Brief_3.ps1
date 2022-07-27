@@ -28,8 +28,9 @@ if ($step -lt 1 ) {
 $sortie = az group create `
 -l $Zone `
 -n $RessourceGroupName 2>&1
+$echec = $?
 $allOutput = "`n$sortie`n"
-    if ($? -eq $false) {
+    if ($echec -eq $false) {
         throw 'la création du groupe de ressource GiteaFirst a échoué'
     }
     else {
@@ -42,8 +43,9 @@ if ($step -lt 2) {
     -g $RessourceGroupName `
     -n $VnetName `
     --address-prefix $PlageIPVnet 2>&1
+    $echec = $?
     $allOutput += "`n$sortie`n"
-    if ($? -eq $false) {
+    if ($echec -eq $false) {
         throw 'la création du Vnet GiteaVnet a échoué'
     }
     else {
@@ -58,8 +60,9 @@ $sortie = az network vnet subnet create `
     --vnet-name $VnetName `
     --name AzureBastionSubnet `
     --address-prefixes $PlageIPBastion 2>&1
+    $echec = $?
     $allOutput += "`n$sortie`n"
-    if ($? -eq $false) {
+    if ($echec -eq $false) {
         throw 'la création du Subnet SubnetBastion a échoué'
     }
     else {
@@ -72,8 +75,9 @@ $sortie = az network vnet subnet create `
     --vnet-name $VnetName `
     --name $SubNetAppName `
     --address-prefixes $PlageIPApp 2>&1
+    $echec = $?
     $allOutput += "`n$sortie`n"
-    if ($? -eq $false) {
+    if ($echec -eq $false) {
         throw 'la création du Subnet GiteaSubnet a échoué'
     }
     else {
@@ -87,8 +91,9 @@ $sortie = az network public-ip create `
     -g $RessourceGroupName `
     -n $NameIPBastion `
     --sku Standard -z 1 2>&1
+    $echec = $?
     $allOutput += "`n$sortie`n"
-     if ($? -eq $false) {
+     if ($echec -eq $false) {
         throw "la création de l'IP public Bastion a échoué"
     }
     else {
@@ -106,8 +111,9 @@ $sortie = az network bastion create `
 	--public-ip-address $NameIPBastion `
 	-g $RessourceGroupName `
     --vnet-name $VnetName 2>&1
+    $echec = $?
     $allOutput += "`n$sortie`n"
-     if ($? -eq $false) {
+     if ($echec -eq $false) {
         throw 'la création du service Bastion a échoué'
     }
     else {
@@ -124,8 +130,9 @@ $IdBastion = az network bastion list --only-show-errors -g $RessourceGroupName -
 if ($step -lt 7) {
 $sortie = az resource update --ids $IdBastion `
     --set properties.enableTunneling=True
+    $echec = $?
     $allOutput += "`n$sortie`n"
-if ($? -eq $false) {
+if ($echec -eq $false) {
         throw 'Activation du tunnel Bastion échoué'
     }
     else {
@@ -140,8 +147,9 @@ $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard 2>&1 `
     --data-disk-sizes-gb 32 
+    $echec = $?
     $allOutput += "`n$sortie`n"
-if ($? -eq $false) {
+if ($echec -eq $false) {
         throw 'la création de la VM a échoué'
     }
     else {
@@ -165,8 +173,9 @@ $sortie = az mysql server create -l $Zone `
     --tags "key=value" `
     --version 5.7 `
     --only-show-errors 2>&1
+    $echec = $?
     $allOutput += "`n$sortie`n"
-    if ($? -eq $false) {
+    if ($echec -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
     }
     else {
