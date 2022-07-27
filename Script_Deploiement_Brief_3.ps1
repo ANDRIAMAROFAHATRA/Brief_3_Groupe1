@@ -1,12 +1,12 @@
-#az extension add -n ssh
+az extension add -n ssh
 
 
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $allOutput = "$day $Month $Year`n`n"
-$Log_Path = "C:\Users\utilisateur\Desktop\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 7
+$Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
+$step = 8
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -164,15 +164,16 @@ $sortie = az mysql server create -l $Zone `
     --tags "key=value" `
     --version 5.7 `
     --only-show-errors 2>&1
+    $echec = $?
     $allOutput += "`n$sortie`n"
-    if ($? -eq $false) {
+    if ($echec -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
     }
     else {
         Write-Host "Le database a été créé avec succès" -ForegroundColor Green
     }
 }
-#$allOutput >> "$Log_Path"
+$allOutput >> "$Log_Path"
 }
 
 catch {
