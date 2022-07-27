@@ -1,5 +1,6 @@
 #az extension add -n ssh
 
+chcp 65001
 
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
