@@ -1,4 +1,4 @@
-#az extension add -n ssh
+az extension add -n ssh
 
 $PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
 
@@ -204,7 +204,6 @@ if ($step -lt 10) {
         }
     }
 
-#----------------------OUVERTURE DES PORTS----------------------------
 if ($step -lt 11) {
     $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
         --port 443 `
@@ -218,7 +217,6 @@ if ($step -lt 11) {
             Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
         }
     }
-
 $allOutput >> "$Log_Path"
 }
 
