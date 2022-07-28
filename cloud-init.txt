@@ -1,0 +1,40 @@
+#cloud-config
+
+package_update: true
+packages:
+  - wget
+  - git
+package_upgrade: true
+package_reboot_if_required: true
+users:
+  - default
+  - name: gabriel
+    groups: sudo, root
+    shell: /bin/bash
+    plain_text_passwd: bla123!
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_authorized_keys: 
+        - >-
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDLcq2qT7nUurBs9xeCGVoMojqGcKiB1Te1DwFT7VbhTQbi1uGQqmmpEEeaSBu7WheqjULSWJDJysgnHVNfQTs0lGurRBADIBQwLZPmMH2j6CjhuyIFrbw3allgqtyfPA6DMHhewyeqQ+1dWPiwbu8cdM7BspccWOeg1bfGYiyciutE/3muUTdY25NrfCrkvUCc2RRn7sv/4ZMeQbgAIe9vEVn5JH6NuNifQ5CCrgQut+XFGtt+jtgk095zNXhRDgVkYlEVLmkLlZQcBcfj7MSlGE3k0dBsV5IBewmMbzDzGzDABbX2Z2RVz8GFPgSEzTz+VbfeyHoYMhVK4m4S3bR1w4FLfAq/MZulfvJa2IUknHoHrly9LeeA51Gh5qKnh5GoMCmg8I4DJJF+9tZGbW/8lQq9mU7GubSZaNYP7j9IAWkjkBk+OBGn66PdG/0RTNEghA8VhT0JYfp4lImYBVae5cMQ27DS6Bt3bhnNM7UbSz97+aeEmC+3m1eNrGp3iye4uCINJkQl1QZv9f6LiE5iBRJaduHHQ0o9ZIvGyG5BP6+YwqocXBPjXY/lX4fUSEDeBxhkMkJw/3aPqheM5gLby3jmXWfm89pabJ1W3+SR3nhTjW+LGYyyU4E06ogLobyYiKsz25wsYC6Lgg75TiqoYtLZKAb2b3Ed3fZB5fp3hQ== sarai@LAPTOP-J4NVIIOB
+  - name: steph
+    groups: sudo, root
+    shell: /bin/bash
+    plain_text_passwd: bla123!
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_authorized_keys: 
+        - >-
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCnBYZRoOJm/hLnbGmUBNhBEsdvUAqVb48EQql7OeYgB4pO/FFu8OIhKofBCByf1l9owEWnbWFZJhfgwQ+iNZjd+1iZtmc6cidjqQypgEc+U43avchEVdZdjK1LidIIJt0O7o8L0gARNn1PjDFLP3eUI2XN3ALUzB3sRzXKTJ1QHz8S1ByhfWXw2vhsPa9I3Jv9aE8zZuCBx/gfVQQy/FyskgK8VWRHhUl3XCgNDxUYBppnBgCCDWHpYOdzH/5XuRORdgMccDgJ/NhcCgY+erva7DlkIlzRiVxm5uMK8kvEiDn+AWI3aGsgxt3LaS+xaiw4hLLoev4V4cWTjWhZPeJSITDeWk3HAsBxDBWGvx3716ywsh7mkDJpjyXow6RXpTBke2rTmr4X9+hVGop4ZjqyTTUuTkdbYllwiaTrsuKgOJ5ne2lWp1P1IT0cD0s9j0GNl/54KaN31HFiuHVYVVA8yGp532LfRjhthpMdHiuhJbswlKTrDJR3i1iccT0aiUk= utilisateur@UTILISA-2JUD7VR
+  - name: celia
+    groups: sudo, root
+    shell: /bin/bash
+    plain_text_passwd: bla123!
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_authorized_keys: 
+        - >-
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDRBSlckGDaO56A0EEpSdi4fVE1dGyt14jb82CS2+McddNmqINOo53h4s/Lo6IPfoGpLegHXT1DRw9qb55XgVFDHhV9aTPvZJaKN3RbxlGrHbQZ2NuWRsU+KBxdKq4Qr94zBYgii/nojAmf56nYN0SMwBOGMdc1IbSybqiOFIZfFo18MATYJL4gInGu4BeyMQoN40tgddzYOx+94orM8FH8HuhhlkQCzvHTyz8Cov5jYyhV088H2hRgvn1E7bJHl8YjsT4wubUvf8ilDu6EzhMntQ1C61L65txyfxYp3E2O1ec8/0sLkW5rHpuyncUu7CbIFHkZ3qFhPeE1LLa7lmrmnu7N4BragVmX1oknR05jv/cucedRowwGnrcqKYiBQ7rVa9cWlY2ayCsmbDm7CwnOZoOebYpFO1RnKx/DJ8r/GgUysHaG9A1d3hdzloEwxbG2Osg2t5J8jf8zMNctb4MkbdZj9eIaHEsNyYHEtBpIZye+8Louf5m8EJGHCeKCksM= utilisateur@UTILISA-IUAPJVS
+  - name: git
+    groups: sudo, root
+    shell: /bin/bash
+    lock_passwd: 'false'
+    gecos: Git Version Control
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
