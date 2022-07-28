@@ -4,6 +4,7 @@ package_update: true
 packages:
   - wget
   - git
+  - certbot
 package_upgrade: true
 package_reboot_if_required: true
 users:
@@ -38,3 +39,9 @@ users:
     lock_passwd: 'false'
     gecos: Git Version Control
     sudo: 'ALL=(ALL) NOPASSWD:ALL'
+runcmd:
+    - [ ls, -l, / ]
+    - [ sh, -xc, "echo $(date) ': hello world!'" ]
+    - [ sh, -c, echo "=========hello world'=========" ]
+    - ls -l /root
+    - [ wget, "http://example.org", -O, /tmp/index.html ]
