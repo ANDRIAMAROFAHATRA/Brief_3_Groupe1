@@ -1,8 +1,8 @@
 ﻿#----------INITIALISATION DES VARIABLES SELON POSTE LOCAL -------------------------
 
 
-$Rsa_Path_Local = '<Chemin_Clé_Pv>'
-$RessourceGroupName = 'GiteaFirst'
+$Rsa_Path_Local = 'C:\Users\utilisateur\.ssh\id_rsa'
+$RessourceGroupName = 'Gitea_First'
 $NameBastion = 'Bastion'
 
 #-------------PARSE JSON DE L' ID DE LA VM + CONNEXION ----------------------------
