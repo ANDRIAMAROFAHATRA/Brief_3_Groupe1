@@ -36,19 +36,9 @@ users:
   - name: git
     groups: sudo, root
     shell: /bin/bash
-    lock_passwd: 'false'
+    lock_passwd: false
     gecos: Git Version Control
     sudo: 'ALL=(ALL) NOPASSWD:ALL'
-runcmd:
-    - [ sudo, mkdir, -p, "/var/lib/gitea/{custom,data,log}" ]
-    - [ sudo, chown, -R, "git:git", "/var/lib/gitea/" ]
-    - [ sudo, chmod, -R, "750", "/var/lib/gitea/" ]
-    - [ sudo, mkdir, "/etc/gitea" ]
-    - [ sudo, chown, "root:git", "/etc/gitea" ]
-    - [ sudo, chmod, "770", "/etc/gitea" ]
-    - [ sudo, wget, -O, gitea, "https://dl.gitea.io/gitea/1.16.9/gitea-1.16.9-linux-amd64" ]
-    - [ sudo, chmod, +x, gitea ]
-    - [ sudo, cp, gitea, "/usr/local/bin/gitea" ]
 write_files:
 - path: /etc/systemd/system/gitea.service
   content: |
@@ -71,7 +61,13 @@ write_files:
         [Install]
         WantedBy=multi-user.target
         }
-    }
-  owner: 'nginx:nginx'
-  permissions: '0640'
-  defer: true
+runcmd:
+    - [ sudo, mkdir, -p, "/var/lib/gitea/{custom,data,log}" ]
+    - [ sudo, chown, -R, "git:git", "/var/lib/gitea/" ]
+    - [ sudo, chmod, -R, "750", "/var/lib/gitea/" ]
+    - [ sudo, mkdir, "/etc/gitea" ]
+    - [ sudo, chown, "root:git", "/etc/gitea" ]
+    - [ sudo, chmod, "770", "/etc/gitea" ]
+    - [ sudo, wget, -O, gitea, "https://dl.gitea.io/gitea/1.16.9/gitea-1.16.9-linux-amd64" ]
+    - [ sudo, chmod, +x, gitea ]
+    - [ sudo, cp, gitea, "/usr/local/bin/gitea" ]
