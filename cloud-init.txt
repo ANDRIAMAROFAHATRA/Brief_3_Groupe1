@@ -40,8 +40,11 @@ users:
     gecos: Git Version Control
     sudo: 'ALL=(ALL) NOPASSWD:ALL'
 runcmd:
-    - [ ls, -l, / ]
-    - [ sh, -xc, "echo $(date) ': hello world!'" ]
-    - [ sh, -c, echo "=========hello world'=========" ]
-    - ls -l /root
-    - [ wget, "http://example.org", -O, /tmp/index.html ]
+    - [ sudo, mkdir, -p, "/var/lib/gitea/{custom,data,log}" ]
+    - [ sudo, chown, -R, "git:git", "/var/lib/gitea/" ]
+    - [ sudo, chmod, -R, "750", "/var/lib/gitea/" ]
+    - [ sudo, mkdir, "/etc/gitea" ]
+    - [ sudo, chown, "root:git", "/etc/gitea" ]
+    - [ sudo, chmod, "770", "/etc/gitea" ]
+    - [ sudo, wget, -O, gitea, "https://dl.gitea.io/gitea/1.16.9/gitea-1.16.9-linux-amd64" ]
+    - [ sudo, chmod, +x, gitea ]
