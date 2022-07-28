@@ -10,7 +10,7 @@ $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
 $step = 10
 $Zone = 'francecentral'
-$RessourceGroupName = 'Gitea_First'
+$RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
@@ -133,8 +133,7 @@ $IdBastion = az network bastion list --only-show-errors -g $RessourceGroupName -
 
 #---------------------Tunnelling bastion ------------------------------
 if ($step -lt 7) {
-$sortie = az resource update --ids $IdBastion `
-    --set properties.enableTunneling=True
+$sortie = az resource update --ids $IdBastion --set properties.enableTunneling=True
     $echec = $?
     $allOutput += "`n$sortie`n"
 if ($echec -eq $false) {
@@ -151,8 +150,8 @@ $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard 2>&1 `
-    --size Standard_B2s `
-    --data-disk-sizes-gb 32 
+    --data-disk-sizes-gb 32 `
+    --size Standard_B2s
     $echec = $?
     $allOutput += "`n$sortie`n"
 if ($echec -eq $false) {
@@ -211,6 +210,7 @@ catch {
     Write-Host "In CATCH"
     Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
-    write-host "les ressource Azure créées vont être supprimées" -ForegroundColor DarkRed
+
+    write-host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
     #az group delete -n $RessourceGroupName -y
 }
