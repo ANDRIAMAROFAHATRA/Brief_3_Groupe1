@@ -134,7 +134,7 @@ $IdBastion = az network bastion list --only-show-errors -g $RessourceGroupName -
 
 #---------------------Tunnelling bastion ------------------------------
 if ($step -lt 7) {
-$sortie = az resource update --ids $IdBastion --set properties.enableTunneling=True
+$sortie = az resource update --ids $IdBastion --set properties.enableTunneling=True 2>&1
     $echec = $?
     $allOutput += "`n$sortie`n"
 if ($echec -eq $false) {
@@ -150,10 +150,11 @@ if ($step -lt 8) {
 $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
-	--public-ip-sku Standard 2>&1 `
+	--public-ip-sku Standard `
     --data-disk-sizes-gb 32 `
     --public-ip-address-dns-name giteafirst `
-    --size Standard_B2s
+    --size Standard_B2s `
+    --custom-data cloud-init.txt 2>&1
     $echec = $?
     $allOutput += "`n$sortie`n"
 if ($echec -eq $false) {
@@ -217,6 +218,20 @@ if ($step -lt 11) {
             Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
         }
     }
+
+    if ($step -lt 12) {
+        $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
+            --port 3000 `
+            --priority 700 2>&1
+        $echec = $?
+        $allOutput += "`n$sortie`n"
+        if ($echec -eq $false) {
+                Write-Host "Ouverture du port 443 a échoué" -ForegroundColor Yellow
+            }
+            else {
+                Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
+            }
+        }
 $allOutput >> "$Log_Path"
 }
 
