@@ -8,9 +8,9 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 10
+$step = 0
 $Zone = 'francecentral'
-$RessourceGroupName = 'GiteaFirst'
+$RessourceGroupName = 'Gitea_First'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
@@ -27,6 +27,7 @@ try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
 if (!$Env:passwdSQL) {
     Write-Host 'Avez vous mis le mot de passe? NON. C est chiant. Honte à vous. Try again.'
+    exit
 }
 
 if ($step -lt 1 ) {
@@ -36,7 +37,7 @@ $sortie = az group create `
 $echec = $?
 $allOutput = "`n$sortie`n"
     if ($echec -eq $false) {
-        throw 'la création du groupe de ressource GiteaFirst a échoué'
+        throw 'la création du groupe de ressource a échoué'
     }
     else {
         Write-Host "Le groupe de ressource a été créé avec succès" -ForegroundColor Magenta
@@ -151,6 +152,7 @@ $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard 2>&1 `
     --data-disk-sizes-gb 32 `
+    --public-ip-address-dns-name giteafirst `
     --size Standard_B2s
     $echec = $?
     $allOutput += "`n$sortie`n"
@@ -190,15 +192,30 @@ $sortie = az mysql server create -l $Zone `
 
 #----------------------OUVERTURE DES PORTS----------------------------
 if ($step -lt 10) {
-    $sortie = az vm open-port  -n $NameVM -g $RessourceGroupName `
-        --port 80, 443
-        $echec = $?
-        $allOutput += "`n$sortie`n"
+    $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
+        --port 80 2>&1
+    $echec = $?
+    $allOutput += "`n$sortie`n"
     if ($echec -eq $false) {
-            throw 'Ouverture des ports a échoué'
+        Write-Host "Ouverture du port 80 a échoué" -ForegroundColor Yellow
         }
         else {
-            Write-Host "Les ports ont été créés avec succès" -ForegroundColor Yellow
+            Write-Host "Le port 80 a été créé avec succès" -ForegroundColor Yellow
+        }
+    }
+
+#----------------------OUVERTURE DES PORTS----------------------------
+if ($step -lt 11) {
+    $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
+        --port 443 `
+        --priority 800 2>&1
+    $echec = $?
+    $allOutput += "`n$sortie`n"
+    if ($echec -eq $false) {
+            Write-Host "Ouverture du port 443 a échoué" -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
         }
     }
 
@@ -212,5 +229,5 @@ catch {
     $allOutput >> "$Log_Path"
 
     write-host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
-    #az group delete -n $RessourceGroupName -y
+    az group delete -n $RessourceGroupName -y
 }
