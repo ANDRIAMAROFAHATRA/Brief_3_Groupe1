@@ -8,7 +8,7 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 9
+$step = 10
 $Zone = 'francecentral'
 $RessourceGroupName = 'Gitea_First'
 $VnetName = 'GiteaVnet'
@@ -25,9 +25,9 @@ $NameVM = 'VMGitea'
 
 try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
-# if ($Env:passwdSQL = $NULL) {
-#     Write-Host 'Avez vous mis le mot de passe? NON. Honte à vous. Try again.'
-# }
+if (!$Env:passwdSQL) {
+    Write-Host 'Avez vous mis le mot de passe? NON. C est chiant. Honte à vous. Try again.'
+}
 
 if ($step -lt 1 ) {
 $sortie = az group create `
@@ -192,7 +192,7 @@ $sortie = az mysql server create -l $Zone `
 #----------------------OUVERTURE DES PORTS----------------------------
 if ($step -lt 10) {
     $sortie = az vm open-port  -n $NameVM -g $RessourceGroupName `
-        --port 80
+        --port 80, 443
         $echec = $?
         $allOutput += "`n$sortie`n"
     if ($echec -eq $false) {
