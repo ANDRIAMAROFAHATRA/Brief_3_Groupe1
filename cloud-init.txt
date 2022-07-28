@@ -48,3 +48,30 @@ runcmd:
     - [ sudo, chmod, "770", "/etc/gitea" ]
     - [ sudo, wget, -O, gitea, "https://dl.gitea.io/gitea/1.16.9/gitea-1.16.9-linux-amd64" ]
     - [ sudo, chmod, +x, gitea ]
+    - [ sudo, cp, gitea, "/usr/local/bin/gitea" ]
+write_files:
+- path: /etc/systemd/system/gitea.service
+  content: |
+    server {
+        [Unit]
+        Description=Gitea (Git with a cup of tea)
+        After=syslog.target
+        After=network.target
+        [Service]
+        RestartSec=2s
+        Type=simple
+        User=git
+        Group=git
+        WorkingDirectory=/var/lib/gitea/
+        ExecStart=/usr/local/bin/gitea web --config /etc/gitea/app.ini
+        Restart=always
+        Environment=USER=git HOME=/home/git GITEA_WORK_DIR=/var/lib/gitea
+        #CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+        #AmbientCapabilities=CAP_NET_BIND_SERVICE
+        [Install]
+        WantedBy=multi-user.target
+        }
+    }
+  owner: 'nginx:nginx'
+  permissions: '0640'
+  defer: true
