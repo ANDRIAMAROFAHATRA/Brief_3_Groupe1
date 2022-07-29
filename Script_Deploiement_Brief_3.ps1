@@ -1,4 +1,4 @@
-az extension add -n ssh
+#az extension add -n ssh
 
 $PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
 
@@ -10,17 +10,18 @@ $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 $Zone = 'francecentral'
-$RessourceGroupName = 'Gitea_First'
+$RessourceGroupName = 'GiteaFirstTest'
 $VnetName = 'GiteaVnet'
-$PlageIPVnet = '10.0.1.0/24'
-$PlageIPBastion = '10.0.1.64/26'
+$PlageIPVnet = '10.0.10.0/24'
+$PlageIPBastion = '10.0.10.64/26'
 $SubNetAppName = 'GiteaSubnet'
-$PlageIPApp = '10.0.1.0/28'
+$PlageIPApp = '10.0.10.0/28'
 $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
-$NameDB = 'GiteaSQLsrv'
+$NameDB = 'GiteaSQLsrvTest'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
+$Dns_Name = 'gitea-first1988'
 
 
 try {
@@ -149,10 +150,10 @@ if ($echec -eq $false) {
 if ($step -lt 8) {
 $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
-	--private-ip-address 10.0.1.4 `
+	--private-ip-address 10.0.10.4 `
 	--public-ip-sku Standard `
     --data-disk-sizes-gb 32 `
-    --public-ip-address-dns-name giteafirst `
+    --public-ip-address-dns-name $Dns_Name `
     --size Standard_B2s `
     --custom-data cloud-init.txt 2>&1
     $echec = $?
@@ -229,7 +230,7 @@ if ($step -lt 11) {
                 Write-Host "Ouverture du port 443 a échoué" -ForegroundColor Yellow
             }
             else {
-                Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
+                Write-Host "Le port 3000 a été créé avec succès" -ForegroundColor Yellow
             }
         }
 $allOutput >> "$Log_Path"
@@ -242,5 +243,6 @@ catch {
     $allOutput >> "$Log_Path"
 
     write-host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
-    az group delete -n $RessourceGroupName -y
-}
+    
+    
+    }
