@@ -42,7 +42,6 @@ users:
 write_files:
   - path: /etc/systemd/system/gitea.service
     content: |
-      server {
           [Unit]
           Description=Gitea (Git with a cup of tea)
           After=syslog.target
@@ -60,7 +59,6 @@ write_files:
           #AmbientCapabilities=CAP_NET_BIND_SERVICE
           [Install]
           WantedBy=multi-user.target
-          }
 runcmd:
     - [ sudo, mkdir, -p, "/var/lib/gitea/custom" ]
     - [ sudo, mkdir, -p, "/var/lib/gitea/data" ]
