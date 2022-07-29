@@ -18,9 +18,10 @@ $SubNetAppName = 'GiteaSubnet'
 $PlageIPApp = '10.0.1.0/28'
 $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
-$NameDB = 'GiteaSQLsrv'
+$NameservDB = 'GiteaSQLsrv'
 $NameUserDB = 'Gitea'
-$NameservVM = 'VMGitea'
+$NameVM = 'VMGitea'
+$NameDB = 'gitea'
 
 
 try {
@@ -217,7 +218,7 @@ if ($step -lt 10){
         throw 'la création de la database Gitea a échoué'
     }
     else {
-        Write-Host "La database a été créée avec succès" -ForegroundColor Blue
+        Write-Host "La database $NameDB a été créée avec succès" -ForegroundColor Blue
     }
 }
 
