@@ -181,6 +181,7 @@ $sortie = az mysql server create -l $Zone `
     --storage-size 51200 `
     --tags "key=value" `
     --version 5.7 `
+    --ssl-enforcement Enabled `
     --only-show-errors 2>&1
     $echec = $?
     $allOutput += "`n$sortie`n"
