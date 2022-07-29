@@ -10,7 +10,7 @@ $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 $Zone = 'francecentral'
-$RessourceGroupName = 'Gitea_First'
+$RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
@@ -226,10 +226,10 @@ if ($step -lt 11) {
         $echec = $?
         $allOutput += "`n$sortie`n"
         if ($echec -eq $false) {
-                Write-Host "Ouverture du port 443 a échoué" -ForegroundColor Yellow
+                Write-Host "Ouverture du port 3000 a échoué" -ForegroundColor Yellow
             }
             else {
-                Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
+                Write-Host "Le port 3000 a été créé avec succès" -ForegroundColor Yellow
             }
         }
 $allOutput >> "$Log_Path"
