@@ -1,6 +1,6 @@
 az extension add -n ssh
 
-$PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
+$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
 
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
@@ -8,7 +8,7 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 7
+$step = 0
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -209,7 +209,7 @@ if ($step -lt 10){
     }
 }
 
-if ($step -lt 10){
+if ($step -lt 11){
     $sortie = az sql db create `
     -n $NameDB `
     -g $RessourceGroupName `
@@ -260,6 +260,6 @@ catch {
     Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
 
-    write-host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
-    az group delete -n $RessourceGroupName -y
+    Write-Host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
+    #az group delete -n $RessourceGroupName -y
 }
