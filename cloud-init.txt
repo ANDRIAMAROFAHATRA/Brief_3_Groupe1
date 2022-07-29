@@ -40,29 +40,31 @@ users:
     gecos: Git Version Control
     sudo: 'ALL=(ALL) NOPASSWD:ALL'
 write_files:
-- path: /etc/systemd/system/gitea.service
-  content: |
-    server {
-        [Unit]
-        Description=Gitea (Git with a cup of tea)
-        After=syslog.target
-        After=network.target
-        [Service]
-        RestartSec=2s
-        Type=simple
-        User=git
-        Group=git
-        WorkingDirectory=/var/lib/gitea/
-        ExecStart=/usr/local/bin/gitea web --config /etc/gitea/app.ini
-        Restart=always
-        Environment=USER=git HOME=/home/git GITEA_WORK_DIR=/var/lib/gitea
-        #CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-        #AmbientCapabilities=CAP_NET_BIND_SERVICE
-        [Install]
-        WantedBy=multi-user.target
-        }
+  - path: /etc/systemd/system/gitea.service
+    content: |
+      server {
+          [Unit]
+          Description=Gitea (Git with a cup of tea)
+          After=syslog.target
+          After=network.target
+          [Service]
+          RestartSec=2s
+          Type=simple
+          User=git
+          Group=git
+          WorkingDirectory=/var/lib/gitea/
+          ExecStart=/usr/local/bin/gitea web --config /etc/gitea/app.ini
+          Restart=always
+          Environment=USER=git HOME=/home/git GITEA_WORK_DIR=/var/lib/gitea
+          #CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+          #AmbientCapabilities=CAP_NET_BIND_SERVICE
+          [Install]
+          WantedBy=multi-user.target
+          }
 runcmd:
-    - [ sudo, mkdir, -p, "/var/lib/gitea/{custom,data,log}" ]
+    - [ sudo, mkdir, -p, "/var/lib/gitea/custom" ]
+    - [ sudo, mkdir, -p, "/var/lib/gitea/data" ]
+    - [ sudo, mkdir, -p, "/var/lib/gitea/log" ]
     - [ sudo, chown, -R, "git:git", "/var/lib/gitea/" ]
     - [ sudo, chmod, -R, "750", "/var/lib/gitea/" ]
     - [ sudo, mkdir, "/etc/gitea" ]
