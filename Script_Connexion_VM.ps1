@@ -2,7 +2,7 @@
 
 
 $Rsa_Path_Local = 'C:\Users\utilisateur\.ssh\id_rsa'
-$RessourceGroupName = 'GiteaFirstTest'
+$RessourceGroupName = 'GiteaFirst'
 $NameBastion = 'Bastion'
 
 #-------------PARSE JSON DE L' ID DE LA VM + CONNEXION ----------------------------

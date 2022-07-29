@@ -8,26 +8,26 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 0
+$step = 7
 $Zone = 'francecentral'
-$RessourceGroupName = 'GiteaFirstTest'
+$RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
-$PlageIPVnet = '10.0.10.0/24'
-$PlageIPBastion = '10.0.10.64/26'
+$PlageIPVnet = '10.0.1.0/24'
+$PlageIPBastion = '10.0.1.64/26'
 $SubNetAppName = 'GiteaSubnet'
-$PlageIPApp = '10.0.10.0/28'
+$PlageIPApp = '10.0.1.0/28'
 $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
-$NameDB = 'GiteaSQLsrvTest'
+$NameservDB = 'GiteaSQLsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
-$Dns_Name = 'gitea-first1988'
+$NameDB = 'gitea'
 
 
 try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
 if (!$Env:passwdSQL) {
-    Write-Host 'Avez vous mis le mot de passe? NON. C est chiant. Honte à vous. Try again.'
+    Write-Host 'Avez-vous mis le mot de passe? NON. C est chiant. Honte à vous. Try again.'
     exit
 }
 
@@ -169,7 +169,7 @@ if ($echec -eq $false) {
 if ($step -lt 9) {
 $sortie = az mysql server create -l $Zone `
     -g $RessourceGroupName `
-    -n $NameDB `
+    -n $NameservDB `
     -u $NameUserDB `
     -p $Env:passwdSQL `
     --sku-name B_Gen5_1 `
@@ -188,46 +188,64 @@ $sortie = az mysql server create -l $Zone `
         throw 'la création du serveur MYSQL a échoué'
     }
     else {
-        Write-Host "La database a été créée avec succès" -ForegroundColor Green
+        Write-Host "La création du serveur MySQL a été un succès" -ForegroundColor Cyan
+    }
+}
+$ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps
+if ($step -lt 10){
+    $sortie = az sql server firewall-rule create `
+        -g $RessourceGroupName `
+        --server $NameservDB `
+        -n IpGiteaDB `
+        --start-ip-address $ipserver `
+        --end-ip-address $ipserver 2>&1
+     $echec = $?
+     $allOutput += "`n$sortie`n"
+     if ($echec -eq $false) {
+        throw 'la création de la régle firewall du serveur MYSQL a échoué'
+    }
+    else {
+        Write-Host "La régle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
+    }
+}
+
+if ($step -lt 11){
+    $sortie = az sql db create `
+    -n $NameDB `
+    -g $RessourceGroupName `
+    -s $NameservDB 2>&1
+    if ($echec -eq $false) {
+        throw 'la création de la database Gitea a échoué'
+    }
+    else {
+        Write-Host "La database $NameDB a été créée avec succès" -ForegroundColor Blue
     }
 }
 
 #----------------------OUVERTURE DES PORTS----------------------------
-if ($step -lt 10) {
-    $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
-        --port 80 2>&1
-    $echec = $?
-    $allOutput += "`n$sortie`n"
-    if ($echec -eq $false) {
-        Write-Host "Ouverture du port 80 a échoué" -ForegroundColor Yellow
-        }
-        else {
-            Write-Host "Le port 80 a été créé avec succès" -ForegroundColor Yellow
-        }
-    }
 
-if ($step -lt 11) {
+if ($step -lt 12) {
     $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
         --port 443 `
         --priority 800 2>&1
     $echec = $?
     $allOutput += "`n$sortie`n"
     if ($echec -eq $false) {
-            Write-Host "Ouverture du port 443 a échoué" -ForegroundColor Yellow
+            throw "Ouverture du port 443 a échoué"
         }
         else {
             Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
         }
     }
 
-    if ($step -lt 12) {
+    if ($step -lt 13) {
         $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
             --port 3000 `
             --priority 700 2>&1
         $echec = $?
         $allOutput += "`n$sortie`n"
         if ($echec -eq $false) {
-                Write-Host "Ouverture du port 443 a échoué" -ForegroundColor Yellow
+                throw "Ouverture du port 3000 a échoué"
             }
             else {
                 Write-Host "Le port 3000 a été créé avec succès" -ForegroundColor Yellow
