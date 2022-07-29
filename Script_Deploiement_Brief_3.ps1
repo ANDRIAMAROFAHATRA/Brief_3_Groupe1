@@ -209,7 +209,11 @@ if ($step -lt 10){
     }
 }
 
+<<<<<<< HEAD
 if ($step -lt 11){
+=======
+if ($step -lt 10){
+>>>>>>> b0b07a4de6397ca71e5722e2df17142df87fcbb6
     $sortie = az sql db create `
     -n $NameDB `
     -g $RessourceGroupName `
