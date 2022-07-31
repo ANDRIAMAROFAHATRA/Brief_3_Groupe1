@@ -150,7 +150,7 @@ if ($echec -eq $false) {
 if ($step -lt 8) {
 $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
-	--private-ip-address 10.0.10.4 `
+	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard `
     --data-disk-sizes-gb 32 `
     --public-ip-address-dns-name $Dns_Name `
