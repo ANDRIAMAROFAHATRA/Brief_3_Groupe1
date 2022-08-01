@@ -181,7 +181,7 @@ $sortie = az mysql server create -l $Zone `
     }
 }
 az mysql server wait `
-    -n $NameservDB
+    -n $NameservDB `
     --exists
 
 if ($step -lt 9){
