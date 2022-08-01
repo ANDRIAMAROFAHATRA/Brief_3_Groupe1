@@ -180,7 +180,6 @@ $sortie = az mysql server create -l $Zone `
         Write-Host "La création du serveur MySQL a été un succès" -ForegroundColor Cyan
     }
 }
-$ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
 
 
 if ($step -lt 9){
