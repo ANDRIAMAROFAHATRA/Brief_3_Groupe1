@@ -37,7 +37,8 @@ $sortie = az group create `
 -l $Zone `
 -n $RessourceGroupName 2>&1
 $echec = $?
-$allOutput = "`nEtape 1`n$hour`n$sortie`n"
+$hour = Get-Date -Format "HH:mm"
+$allOutput += "`nEtape 1`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du groupe de ressource a échoué'
     }
@@ -69,6 +70,7 @@ $sortie = az network vnet subnet create `
     --name AzureBastionSubnet `
     --address-prefixes $PlageIPBastion 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 3`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du Subnet SubnetBastion a échoué'
@@ -84,6 +86,7 @@ $sortie = az network vnet subnet create `
     --name $SubNetAppName `
     --address-prefixes $PlageIPApp 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 4`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du Subnet GiteaSubnet a échoué'
@@ -100,6 +103,7 @@ $sortie = az network public-ip create `
     -n $NameIPBastion `
     --sku Standard -z 1 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 5`n$hour`n$sortie`n"
      if ($echec -eq $false) {
         throw "la création de l'IP public Bastion a échoué"
@@ -120,6 +124,7 @@ $sortie = az network bastion create `
 	-g $RessourceGroupName `
     --vnet-name $VnetName 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 6`n$hour`n$sortie`n"
      if ($echec -eq $false) {
         throw 'la création du service Bastion a échoué'
@@ -138,6 +143,7 @@ $IdBastion = az network bastion list --only-show-errors -g $RessourceGroupName -
 if ($step -lt 7) {
 $sortie = az resource update --ids $IdBastion --set properties.enableTunneling=True 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 7`n$hour`n$sortie`n"
 if ($echec -eq $false) {
         throw 'Activation du tunnel Bastion échoué'
@@ -158,6 +164,7 @@ $sortie = az vm create -n $NameVM -g $RessourceGroupName `
     --size Standard_B2s `
     --custom-data cloud-init.txt 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 8`n$hour`n$sortie`n"
 if ($echec -eq $false) {
         throw 'la création de la VM a échoué'
@@ -184,6 +191,7 @@ $sortie = az mysql server create -l $Zone `
     --version 5.7 `
     --only-show-errors 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 9`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
@@ -201,6 +209,7 @@ if ($step -lt 10){
         --start-ip-address $ipserver `
         --end-ip-address $ipserver 2>&1
      $echec = $?
+     $hour = Get-Date -Format "HH:mm"
      $allOutput += "`nEtape 10`n$hour`n$sortie`n"
      if ($echec -eq $false) {
         throw 'la création de la régle firewall du serveur MYSQL a échoué'
@@ -218,6 +227,7 @@ if ($step -lt 11){
     --charset utf8mb4 `
     -s $NameservDB 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     allOutput += "`nEtape 11`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création de la database Gitea a échoué'
@@ -234,6 +244,7 @@ if ($step -lt 12) {
         --port 443 `
         --priority 800 2>&1
     $echec = $?
+    $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 12`n$hour`n$sortie`n"
     if ($echec -eq $false) {
             throw "Ouverture du port 443 a échoué"
@@ -248,6 +259,7 @@ if ($step -lt 12) {
             --port 3000 `
             --priority 700 2>&1
         $echec = $?
+        $hour = Get-Date -Format "HH:mm"
         $allOutput += "`nEtape 13`n$hour`n$sortie`n"
         if ($echec -eq $false) {
                 throw "Ouverture du port 3000 a échoué"
