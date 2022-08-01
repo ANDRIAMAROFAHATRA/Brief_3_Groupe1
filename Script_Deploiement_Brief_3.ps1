@@ -1,4 +1,4 @@
-#az extension add -n ssh
+az extension add -n ssh
 
 $OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
 
@@ -172,7 +172,7 @@ $sortie = az mysql server create -l $Zone `
     --only-show-errors 2>&1
     $echec = $?
     $hour = Get-Date -Format "HH:mm"
-    $allOutput += "`nEtape 9`n$hour`n$sortie`n"
+    $allOutput += "`nEtape 8`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
     }
@@ -182,26 +182,8 @@ $sortie = az mysql server create -l $Zone `
 }
 $ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
 
+
 if ($step -lt 9){
-    $sortie = az mysql server firewall-rule create `
-        -g $RessourceGroupName `
-        --server-name $NameservDB `
-        -n IpGiteaDB `
-        --start-ip-address $ipserver `
-        --end-ip-address $ipserver 2>&1
-     $echec = $?
-     $hour = Get-Date -Format "HH:mm"
-     $allOutput += "`nEtape 10`n$hour`n$sortie`n"
-     if ($echec -eq $false) {
-        throw 'la création de la régle firewall du serveur MYSQL a échoué'
-    }
-    else {
-        Write-Host "La régle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
-    }
-}
-
-
-if ($step -lt 10){
     $sortie = az mysql db create `
     -n $NameDB `
     -g $RessourceGroupName `
@@ -209,7 +191,7 @@ if ($step -lt 10){
     -s $NameservDB 2>&1
     $echec = $?
     $hour = Get-Date -Format "HH:mm"
-    allOutput += "`nEtape 11`n$hour`n$sortie`n"
+    allOutput += "`nEtape 9`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création de la database Gitea a échoué'
     }
@@ -220,7 +202,7 @@ if ($step -lt 10){
 
 #----------------------CREATION DE LA VM GITEA----------------------------
 
-if ($step -lt 11) {
+if ($step -lt 10) {
     $sortie = az vm create -n $NameVM -g $RessourceGroupName `
         --image UbuntuLTS `
         --private-ip-address 10.0.1.4 `
@@ -231,7 +213,7 @@ if ($step -lt 11) {
         --custom-data cloud-init.txt 2>&1
         $echec = $?
         $hour = Get-Date -Format "HH:mm"
-        $allOutput += "`nEtape 8`n$hour`n$sortie`n"
+        $allOutput += "`nEtape 10`n$hour`n$sortie`n"
     if ($echec -eq $false) {
             throw 'la création de la VM a échoué'
         }
@@ -242,7 +224,7 @@ if ($step -lt 11) {
 #--------------------------firewall_MySQL---------------------------------------------
     $ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
 
-if ($step -lt 12){
+if ($step -lt 11){
     $sortie = az mysql server firewall-rule create `
         -g $RessourceGroupName `
         --server-name $NameservDB `
@@ -251,7 +233,7 @@ if ($step -lt 12){
         --end-ip-address $ipserver 2>&1
      $echec = $?
      $hour = Get-Date -Format "HH:mm"
-     $allOutput += "`nEtape 10`n$hour`n$sortie`n"
+     $allOutput += "`nEtape 11`n$hour`n$sortie`n"
      if ($echec -eq $false) {
         throw 'la création de la régle firewall du serveur MYSQL a échoué'
     }
@@ -262,7 +244,7 @@ if ($step -lt 12){
 
 #----------------------OUVERTURE DES PORTS----------------------------
 
-if ($step -lt 13) {
+if ($step -lt 12) {
     $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
         --port 443 `
         --priority 800 2>&1
@@ -277,7 +259,7 @@ if ($step -lt 13) {
         }
     }
 
-    if ($step -lt 14) {
+    if ($step -lt 13) {
         $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
             --port 3000 `
             --priority 700 2>&1
