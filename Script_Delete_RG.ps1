@@ -1,1 +1,1 @@
-az group delete -n GiteaFirstDouble -y
+az group delete -n GiteaFirst -y
