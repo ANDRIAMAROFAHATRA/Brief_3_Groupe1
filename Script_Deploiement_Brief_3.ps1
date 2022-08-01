@@ -211,7 +211,7 @@ if ($step -lt 10){
 }
 
 if ($step -lt 11){
-    $sortie = az sql db create `
+    $sortie = az mysql db create `
     -n $NameDB `
     -g $RessourceGroupName `
     -s $NameservDB 2>&1
