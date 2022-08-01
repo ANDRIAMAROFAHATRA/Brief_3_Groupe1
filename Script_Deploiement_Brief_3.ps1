@@ -180,7 +180,9 @@ $sortie = az mysql server create -l $Zone `
         Write-Host "La création du serveur MySQL a été un succès" -ForegroundColor Cyan
     }
 }
-
+az mysql server wait `
+    -n $NameservDB
+    --exists
 
 if ($step -lt 9){
     $sortie = az mysql db create `
