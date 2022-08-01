@@ -8,7 +8,7 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`nLancement du script:`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step =11
+$step = 0
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -239,10 +239,30 @@ if ($step -lt 11) {
             Write-Host "La VM a été créé avec succès" -ForegroundColor Yellow
         }
     }
+#--------------------------firewall_MySQL---------------------------------------------
+    $ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
+
+if ($step -lt 12){
+    $sortie = az mysql server firewall-rule create `
+        -g $RessourceGroupName `
+        --server-name $NameservDB `
+        -n IpGiteaDB `
+        --start-ip-address $ipserver `
+        --end-ip-address $ipserver 2>&1
+     $echec = $?
+     $hour = Get-Date -Format "HH:mm"
+     $allOutput += "`nEtape 10`n$hour`n$sortie`n"
+     if ($echec -eq $false) {
+        throw 'la création de la régle firewall du serveur MYSQL a échoué'
+    }
+    else {
+        Write-Host "La régle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
+    }
+}
 
 #----------------------OUVERTURE DES PORTS----------------------------
 
-if ($step -lt 12) {
+if ($step -lt 13) {
     $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
         --port 443 `
         --priority 800 2>&1
@@ -257,7 +277,7 @@ if ($step -lt 12) {
         }
     }
 
-    if ($step -lt 13) {
+    if ($step -lt 14) {
         $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
             --port 3000 `
             --priority 700 2>&1
