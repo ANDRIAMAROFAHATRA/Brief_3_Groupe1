@@ -1,4 +1,4 @@
-az extension add -n ssh
+#az extension add -n ssh
 
 $OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
 
@@ -27,7 +27,7 @@ $NameDB = 'gitea'
 try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
 if (!$Env:passwdSQL) {
-    Write-Host 'Avez vous mis le mot de passe? NON. C est chiant. Honte à vous. Try again.'
+    Write-Host 'Avez-vous mis le mot de passe? NON. C est chiant. Honte à vous. Try again.'
     exit
 }
 
@@ -153,7 +153,7 @@ $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard `
     --data-disk-sizes-gb 32 `
-    --public-ip-address-dns-name giteafirst `
+    --public-ip-address-dns-name $Dns_Name `
     --size Standard_B2s `
     --custom-data cloud-init.txt 2>&1
     $echec = $?
@@ -208,6 +208,7 @@ if ($step -lt 10){
         Write-Host "La régle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
     }
 }
+
 
 if ($step -lt 11){
     $sortie = az mysql db create `
@@ -264,4 +265,3 @@ catch {
     Write-Host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
     az group delete -n $RessourceGroupName -y
 }
-convertfr
