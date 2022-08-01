@@ -8,7 +8,7 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`nLancement du script:`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 0
+$step =11
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -153,28 +153,8 @@ if ($echec -eq $false) {
     }
 }
 
-#----------------------CREATION DE LA VM GITEA----------------------------
-if ($step -lt 8) {
-$sortie = az vm create -n $NameVM -g $RessourceGroupName `
-	--image UbuntuLTS `
-	--private-ip-address 10.0.1.4 `
-	--public-ip-sku Standard `
-    --data-disk-sizes-gb 32 `
-    --public-ip-address-dns-name $Dns_Name `
-    --size Standard_B2s `
-    --custom-data cloud-init.txt 2>&1
-    $echec = $?
-    $hour = Get-Date -Format "HH:mm"
-    $allOutput += "`nEtape 8`n$hour`n$sortie`n"
-if ($echec -eq $false) {
-        throw 'la création de la VM a échoué'
-    }
-    else {
-        Write-Host "La VM a été créé avec succès" -ForegroundColor Yellow
-    }
-}
 #----------------CREATION DE MYSQL SERVER------------------------	
-if ($step -lt 9) {
+if ($step -lt 8) {
 $sortie = az mysql server create -l $Zone `
     -g $RessourceGroupName `
     -n $NameservDB `
@@ -201,7 +181,8 @@ $sortie = az mysql server create -l $Zone `
     }
 }
 $ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
-if ($step -lt 10){
+
+if ($step -lt 9){
     $sortie = az mysql server firewall-rule create `
         -g $RessourceGroupName `
         --server-name $NameservDB `
@@ -220,7 +201,7 @@ if ($step -lt 10){
 }
 
 
-if ($step -lt 11){
+if ($step -lt 10){
     $sortie = az mysql db create `
     -n $NameDB `
     -g $RessourceGroupName `
@@ -236,6 +217,28 @@ if ($step -lt 11){
         Write-Host "La database $NameDB a été créée avec succès" -ForegroundColor Blue
     }
 }
+
+#----------------------CREATION DE LA VM GITEA----------------------------
+
+if ($step -lt 11) {
+    $sortie = az vm create -n $NameVM -g $RessourceGroupName `
+        --image UbuntuLTS `
+        --private-ip-address 10.0.1.4 `
+        --public-ip-sku Standard `
+        --data-disk-sizes-gb 32 `
+        --public-ip-address-dns-name $Dns_Name `
+        --size Standard_B2s `
+        --custom-data cloud-init.txt 2>&1
+        $echec = $?
+        $hour = Get-Date -Format "HH:mm"
+        $allOutput += "`nEtape 8`n$hour`n$sortie`n"
+    if ($echec -eq $false) {
+            throw 'la création de la VM a échoué'
+        }
+        else {
+            Write-Host "La VM a été créé avec succès" -ForegroundColor Yellow
+        }
+    }
 
 #----------------------OUVERTURE DES PORTS----------------------------
 
