@@ -1,6 +1,7 @@
 #az extension add -n ssh
-
 $PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
+
+#--------Variables pour les logs ---------------------------------
 
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
@@ -8,7 +9,9 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`n`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 7
+
+#------------Variables d'infrastructure------------------------
+
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -22,6 +25,10 @@ $NameservDB = 'GiteaSQLsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 $NameDB = 'gitea'
+
+#----------------variable de developpement----------------
+$step = 0
+
 
 
 try {
@@ -150,7 +157,7 @@ if ($echec -eq $false) {
 if ($step -lt 8) {
 $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
-	--private-ip-address 10.0.10.4 `
+	--private-ip-address 10.0.1.4 `
 	--public-ip-sku Standard `
     --data-disk-sizes-gb 32 `
     --public-ip-address-dns-name $Dns_Name `
@@ -202,18 +209,14 @@ if ($step -lt 10){
      $echec = $?
      $allOutput += "`n$sortie`n"
      if ($echec -eq $false) {
-        throw 'la création de la régle firewall du serveur MYSQL a échoué'
+        throw 'la création de la règle firewall du serveur MYSQL a échoué'
     }
     else {
-        Write-Host "La régle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
+        Write-Host "La règle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
     }
 }
 
-<<<<<<< HEAD
 if ($step -lt 11){
-=======
-if ($step -lt 10){
->>>>>>> b0b07a4de6397ca71e5722e2df17142df87fcbb6
     $sortie = az sql db create `
     -n $NameDB `
     -g $RessourceGroupName `
