@@ -1,7 +1,7 @@
 ﻿#----------INITIALISATION DES VARIABLES SELON POSTE LOCAL -------------------------
 
 
-$Rsa_Path_Local = '<Chemin_Clé_Pv>'
+$Rsa_Path_Local = '<chemin cle priv>'
 $RessourceGroupName = 'GiteaFirst'
 $NameBastion = 'Bastion'
 

@@ -1,12 +1,12 @@
 #az extension add -n ssh
 
-$PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
+$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
 
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
-$allOutput = "$hour`n`n"
+$allOutput = "$hour`nLancement du script:`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
 $step = 0
 $Zone = 'francecentral'
@@ -18,15 +18,18 @@ $SubNetAppName = 'GiteaSubnet'
 $PlageIPApp = '10.0.1.0/28'
 $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
-$NameDB = 'GiteaSQLsvr'
+$NameservDB = 'giteasqlsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
-
+$NameDB = 'gitea'
+$Dns_Name = 'giteafirst'
+#ajouter une fonction pour passer $NameservDB en minuscule
 
 try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
-if ($Env:passwdSQL = $NULL) {
-    Write-Host 'Avez vous mis le mot de passe? NON. Honte à vous. Try again.'
+if (!$Env:passwdSQL) {
+    Write-Host 'Avez-vous mis le mot de passe? NON. C est chiant. Honte à vous. Try again.'
+    exit
 }
 
 if ($step -lt 1 ) {
@@ -34,9 +37,9 @@ $sortie = az group create `
 -l $Zone `
 -n $RessourceGroupName 2>&1
 $echec = $?
-$allOutput = "`n$sortie`n"
+$allOutput = "`nEtape 1`n$hour`n$sortie`n"
     if ($echec -eq $false) {
-        throw 'la création du groupe de ressource GiteaFirst a échoué'
+        throw 'la création du groupe de ressource a échoué'
     }
     else {
         Write-Host "Le groupe de ressource a été créé avec succès" -ForegroundColor Magenta
@@ -49,7 +52,7 @@ if ($step -lt 2) {
     -n $VnetName `
     --address-prefix $PlageIPVnet 2>&1
     $echec = $?
-    $allOutput += "`n$sortie`n"
+    $allOutput += "`nEtape 2`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du Vnet GiteaVnet a échoué'
     }
@@ -66,7 +69,7 @@ $sortie = az network vnet subnet create `
     --name AzureBastionSubnet `
     --address-prefixes $PlageIPBastion 2>&1
     $echec = $?
-    $allOutput += "`n$sortie`n"
+    $allOutput += "`nEtape 3`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du Subnet SubnetBastion a échoué'
     }
@@ -81,7 +84,7 @@ $sortie = az network vnet subnet create `
     --name $SubNetAppName `
     --address-prefixes $PlageIPApp 2>&1
     $echec = $?
-    $allOutput += "`n$sortie`n"
+    $allOutput += "`nEtape 4`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du Subnet GiteaSubnet a échoué'
     }
@@ -97,7 +100,7 @@ $sortie = az network public-ip create `
     -n $NameIPBastion `
     --sku Standard -z 1 2>&1
     $echec = $?
-    $allOutput += "`n$sortie`n"
+    $allOutput += "`nEtape 5`n$hour`n$sortie`n"
      if ($echec -eq $false) {
         throw "la création de l'IP public Bastion a échoué"
     }
@@ -117,7 +120,7 @@ $sortie = az network bastion create `
 	-g $RessourceGroupName `
     --vnet-name $VnetName 2>&1
     $echec = $?
-    $allOutput += "`n$sortie`n"
+    $allOutput += "`nEtape 6`n$hour`n$sortie`n"
      if ($echec -eq $false) {
         throw 'la création du service Bastion a échoué'
     }
@@ -133,9 +136,9 @@ $IdBastion = az network bastion list --only-show-errors -g $RessourceGroupName -
 
 #---------------------Tunnelling bastion ------------------------------
 if ($step -lt 7) {
-$sortie = az resource update --ids $IdBastion --set properties.enableTunneling=True
+$sortie = az resource update --ids $IdBastion --set properties.enableTunneling=True 2>&1
     $echec = $?
-    $allOutput += "`n$sortie`n"
+    $allOutput += "`nEtape 7`n$hour`n$sortie`n"
 if ($echec -eq $false) {
         throw 'Activation du tunnel Bastion échoué'
     }
@@ -149,11 +152,13 @@ if ($step -lt 8) {
 $sortie = az vm create -n $NameVM -g $RessourceGroupName `
 	--image UbuntuLTS `
 	--private-ip-address 10.0.1.4 `
-	--public-ip-sku Standard 2>&1 `
+	--public-ip-sku Standard `
     --data-disk-sizes-gb 32 `
-    --size Standard_B2s
+    --public-ip-address-dns-name $Dns_Name `
+    --size Standard_B2s `
+    --custom-data cloud-init.txt 2>&1
     $echec = $?
-    $allOutput += "`n$sortie`n"
+    $allOutput += "`nEtape 8`n$hour`n$sortie`n"
 if ($echec -eq $false) {
         throw 'la création de la VM a échoué'
     }
@@ -165,13 +170,13 @@ if ($echec -eq $false) {
 if ($step -lt 9) {
 $sortie = az mysql server create -l $Zone `
     -g $RessourceGroupName `
-    -n $NameDB `
+    -n $NameservDB `
     -u $NameUserDB `
     -p $Env:passwdSQL `
     --sku-name B_Gen5_1 `
     --ssl-enforcement Enabled `
     --minimal-tls-version TLS1_0 `
-    --public-network-access Disabled `
+    --public-network-access Enabled `
 	--backup-retention 14 `
     --geo-redundant-backup Disabled `
     --storage-size 51200 `
@@ -179,30 +184,79 @@ $sortie = az mysql server create -l $Zone `
     --version 5.7 `
     --only-show-errors 2>&1
     $echec = $?
-    $allOutput += "`n$sortie`n"
+    $allOutput += "`nEtape 9`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
     }
     else {
-        Write-Host "Le database a été créé avec succès" -ForegroundColor Green
+        Write-Host "La création du serveur MySQL a été un succès" -ForegroundColor Cyan
+    }
+}
+$ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
+if ($step -lt 10){
+    $sortie = az mysql server firewall-rule create `
+        -g $RessourceGroupName `
+        --server-name $NameservDB `
+        -n IpGiteaDB `
+        --start-ip-address $ipserver `
+        --end-ip-address $ipserver 2>&1
+     $echec = $?
+     $allOutput += "`nEtape 10`n$hour`n$sortie`n"
+     if ($echec -eq $false) {
+        throw 'la création de la régle firewall du serveur MYSQL a échoué'
+    }
+    else {
+        Write-Host "La régle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
+    }
+}
+
+
+if ($step -lt 11){
+    $sortie = az mysql db create `
+    -n $NameDB `
+    -g $RessourceGroupName `
+    --charset utf8mb4 `
+    -s $NameservDB 2>&1
+    $echec = $?
+    allOutput += "`nEtape 11`n$hour`n$sortie`n"
+    if ($echec -eq $false) {
+        throw 'la création de la database Gitea a échoué'
+    }
+    else {
+        Write-Host "La database $NameDB a été créée avec succès" -ForegroundColor Blue
     }
 }
 
 #----------------------OUVERTURE DES PORTS----------------------------
-if ($step -lt 10) {
-    $sortie = az vm open-port  -n $NameVM -g $RessourceGroupName `
-        --port 80
-        $echec = $?
-        $allOutput += "`n$sortie`n"
+
+if ($step -lt 12) {
+    $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
+        --port 443 `
+        --priority 800 2>&1
+    $echec = $?
+    $allOutput += "`nEtape 12`n$hour`n$sortie`n"
     if ($echec -eq $false) {
-            throw 'Ouverture des ports a échoué'
+            throw "Ouverture du port 443 a échoué"
         }
         else {
-            Write-Host "Les ports ont été créés avec succès" -ForegroundColor Yellow
+            Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
         }
     }
 
-    $allOutput >> "$Log_Path"
+    if ($step -lt 13) {
+        $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
+            --port 3000 `
+            --priority 700 2>&1
+        $echec = $?
+        $allOutput += "`nEtape 13`n$hour`n$sortie`n"
+        if ($echec -eq $false) {
+                throw "Ouverture du port 3000 a échoué"
+            }
+            else {
+                Write-Host "Le port 3000 a été créé avec succès" -ForegroundColor Yellow
+            }
+        }
+$allOutput >> "$Log_Path"
 }
 
 catch {
@@ -210,6 +264,7 @@ catch {
     Write-Host "In CATCH"
     Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
-    write-host "les ressource Azure créées vont être supprimées:" -ForegroundColor DarkRed
+
+    Write-Host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
     #az group delete -n $RessourceGroupName -y
 }
