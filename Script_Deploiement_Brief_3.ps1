@@ -22,6 +22,7 @@ $NameservDB = 'giteasqlsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 $NameDB = 'gitea'
+$Dns_Name = 'giteafirst'
 #ajouter une fonction pour passer $NameservDB en minuscule
 
 try {
