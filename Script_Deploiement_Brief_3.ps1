@@ -216,6 +216,7 @@ if ($step -lt 11){
     -n $NameDB `
     -g $RessourceGroupName `
     -s $NameservDB 2>&1
+    $echec = $?
     allOutput += "`nEtape 11`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création de la database Gitea a échoué'
