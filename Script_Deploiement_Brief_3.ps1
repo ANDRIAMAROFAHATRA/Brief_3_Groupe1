@@ -186,7 +186,6 @@ if ($step -lt 9){
     $sortie = az mysql db create `
     -n $NameDB `
     -g $RessourceGroupName `
-    --charset utf8mb4 `
     -s $NameservDB 2>&1
     $echec = $?
     $hour = Get-Date -Format "HH:mm"
