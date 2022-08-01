@@ -1,14 +1,14 @@
 #az extension add -n ssh
 
-$PSDefaultParameterValues = @{'*:Encoding' = 'utf8'}
+$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
 
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
-$allOutput = "$hour`n`n"
+$allOutput = "$hour`nLancement du script:`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 7
+$step = 0
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -18,11 +18,11 @@ $SubNetAppName = 'GiteaSubnet'
 $PlageIPApp = '10.0.1.0/28'
 $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
-$NameservDB = 'GiteaSQLsrv'
+$NameservDB = 'giteasqlsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 $NameDB = 'gitea'
-
+#ajouter une fonction pour passer $NameservDB en minuscule
 
 try {
 #-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
@@ -175,12 +175,13 @@ $sortie = az mysql server create -l $Zone `
     --sku-name B_Gen5_1 `
     --ssl-enforcement Enabled `
     --minimal-tls-version TLS1_0 `
-    --public-network-access Disabled `
+    --public-network-access Enabled `
 	--backup-retention 14 `
     --geo-redundant-backup Disabled `
     --storage-size 51200 `
     --tags "key=value" `
     --version 5.7 `
+    --ssl-enforcement Enabled `
     --only-show-errors 2>&1
     $echec = $?
     $allOutput += "`nEtape 9`n$hour`n$sortie`n"
@@ -191,9 +192,9 @@ $sortie = az mysql server create -l $Zone `
         Write-Host "La création du serveur MySQL a été un succès" -ForegroundColor Cyan
     }
 }
-$ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps
+$ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
 if ($step -lt 10){
-    $sortie = az sql server firewall-rule create `
+    $sortie = az mysql server firewall-rule create `
         -g $RessourceGroupName `
         --server $NameservDB `
         -n IpGiteaDB `
@@ -208,6 +209,8 @@ if ($step -lt 10){
         Write-Host "La régle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
     }
 }
+
+
 if ($step -lt 11){
     $sortie = az sql db create `
     -n $NameDB `
@@ -260,5 +263,6 @@ catch {
     Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
 
-    write-host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed 
-    }
+    Write-Host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
+    #az group delete -n $RessourceGroupName -y
+}
