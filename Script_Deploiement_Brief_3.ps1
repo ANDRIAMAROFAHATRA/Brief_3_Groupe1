@@ -181,6 +181,7 @@ $sortie = az mysql server create -l $Zone `
     }
 }
 az mysql server wait `
+    -g $RessourceGroupName `
     -n $NameservDB `
     --exists
 
