@@ -210,7 +210,7 @@ if ($step -lt 10) {
         --data-disk-sizes-gb 32 `
         --public-ip-address-dns-name $Dns_Name `
         --size Standard_B2s `
-        --custom-data .\cloud-init.txt 2>&1
+        --custom-data cloud-init.txt 2>&1
         $echec = $?
         $hour = Get-Date -Format "HH:mm"
         $allOutput += "`nEtape 10`n$hour`n$sortie`n"
