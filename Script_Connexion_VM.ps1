@@ -1,7 +1,7 @@
 ﻿#----------INITIALISATION DES VARIABLES SELON POSTE LOCAL -------------------------
 
 
-$Rsa_Path_Local = 'C:\Users\utilisateur\.ssh\id_rsa'
+$Rsa_Path_Local = '<chemin cle priv>'
 $RessourceGroupName = 'GiteaFirst'
 $NameBastion = 'Bastion'
 $UserSQL = 'steph'
