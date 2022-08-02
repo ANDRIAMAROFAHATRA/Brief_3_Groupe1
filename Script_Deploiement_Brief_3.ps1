@@ -8,7 +8,7 @@ $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`nLancement du script:`n"
 $Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 0
+$step = 9
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
@@ -153,7 +153,7 @@ if ($echec -eq $false) {
     }
 }
 
-#----------------CREATION DE MYSQL SERVER------------------------	
+#----------------CREATION DE MYSQL SERVER------------------------
 if ($step -lt 8) {
 $sortie = az mysql server create -l $Zone `
     -g $RessourceGroupName `
@@ -180,19 +180,17 @@ $sortie = az mysql server create -l $Zone `
         Write-Host "La création du serveur MySQL a été un succès" -ForegroundColor Cyan
     }
 }
-az mysql server wait `
-    -g $RessourceGroupName `
-    -n $NameservDB `
-    --exists
 
 if ($step -lt 9){
     $sortie = az mysql db create `
     -n $NameDB `
     -g $RessourceGroupName `
+    --charset utf8mb4 `
+    --collation utf8mb4_general_ci `
     -s $NameservDB 2>&1
     $echec = $?
     $hour = Get-Date -Format "HH:mm"
-    allOutput += "`nEtape 9`n$hour`n$sortie`n"
+    $allOutput += "`nEtape 9`n$hour`n$sortie`n"
     if ($echec -eq $false) {
         throw 'la création de la database Gitea a échoué'
     }
@@ -212,7 +210,7 @@ if ($step -lt 10) {
         --data-disk-sizes-gb 32 `
         --public-ip-address-dns-name $Dns_Name `
         --size Standard_B2s `
-        --custom-data cloud-init.txt 2>&1
+        --custom-data .\cloud-init.txt 2>&1
         $echec = $?
         $hour = Get-Date -Format "HH:mm"
         $allOutput += "`nEtape 10`n$hour`n$sortie`n"
