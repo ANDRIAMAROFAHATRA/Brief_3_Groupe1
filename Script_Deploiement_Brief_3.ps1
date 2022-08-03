@@ -30,15 +30,14 @@ $NameDB = 'gitea'
 #----------------variable de developpement----------------
 
 $Dns_Name = 'giteafirst'
-#ajouter une fonction pour passer $NameservDB en minuscule
 
 try {
-#-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
 if (!$Env:passwdSQL) {
     Write-Host 'Avez-vous mis le mot de passe? NON. C est chiant. Honte à vous. Try again.'
     exit
 }
 
+#-------------------CREATION DU GROUPE DU RESSOURCE ET DU RESEAU---------------------------------
 if ($step -lt 1 ) {
 $sortie = az group create `
 -l $Zone `
@@ -289,5 +288,5 @@ catch {
     $allOutput >> "$Log_Path"
 
     Write-Host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
-    #az group delete -n $RessourceGroupName -y
+    az group delete -n $RessourceGroupName -y
 }
