@@ -1,8 +1,5 @@
 az extension add -n ssh
 
-$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
-
-
 #--------Variables pour les logs ---------------------------------
 
 $Month = Get-Date -Format 'MM'
@@ -10,12 +7,13 @@ $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`nLancement du script:`n"
-$Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
+$Log_Path = "..\log\Deploiement_Gitea_$Year$Month$Day.log"
 
 
 #------------Variables d'infrastructure------------------------
 
 $step = 9
+
 $Zone = 'francecentral'
 $RessourceGroupName = 'GiteaFirst2'
 $VnetName = 'GiteaVnet'
@@ -290,7 +288,6 @@ $allOutput >> "$Log_Path"
 catch {
     $stderr = $allOutput | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
     Write-Host "In CATCH"
-    Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
 
     Write-Host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
