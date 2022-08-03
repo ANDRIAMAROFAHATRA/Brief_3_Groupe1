@@ -1,14 +1,20 @@
 az extension add -n ssh
 
+#--------Variables pour les logs ---------------------------------
+
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`nLancement du script:`n"
 $Log_Path = "..\log\Deploiement_Gitea_$Year$Month$Day.log"
+
+#------------Variables d'infrastructure------------------------
+
 $step = 0
+
 $Zone = 'francecentral'
-$RessourceGroupName = 'Giteathird'
+$RessourceGroupName = 'GiteaFirst2'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
@@ -20,7 +26,10 @@ $NameservDB = 'giteasqlsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 $NameDB = 'gitea'
-$Dns_Name = 'giteathird'
+
+#----------------variable de developpement----------------
+
+$Dns_Name = 'giteafirst'
 #ajouter une fonction pour passer $NameservDB en minuscule
 
 try {
@@ -198,7 +207,7 @@ if ($step -lt 9){
 }
 
 #----------------------CREATION DE LA VM GITEA----------------------------
-(Get-Content .\cloud-init.txt) -replace 'PASSWD   = MOTDEPASSE', "PASSWD   = $Env:passwdSQL" | Out-File .\cloud-init.txt
+#(Get-Content .\cloud-init2.txt) -replace 'PASSWD   = MOTDEPASSE', "PASSWD   = $Env:passwdSQL" | Out-File .\cloud-init2.txt
 
 if ($step -lt 10) {
     $sortie = az vm create -n $NameVM -g $RessourceGroupName `
@@ -219,7 +228,7 @@ if ($step -lt 10) {
             Write-Host "La VM a été créé avec succès" -ForegroundColor Yellow
         }
     }
-    (Get-Content .\cloud-init.txt) -replace "PASSWD   = $Env:passwdSQL", 'PASSWD   = MOTDEPASSE' | Out-File .\cloud-init.txt
+    #(Get-Content .\cloud-init2.txt) -replace "PASSWD   = $Env:passwdSQL", 'PASSWD   = MOTDEPASSE' | Out-File .\cloud-init2.txt
 #--------------------------firewall_MySQL---------------------------------------------
     $ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
 
@@ -234,10 +243,10 @@ if ($step -lt 11){
      $hour = Get-Date -Format "HH:mm"
      $allOutput += "`nEtape 11`n$hour`n$sortie`n"
      if ($echec -eq $false) {
-        throw 'la création de la régle firewall du serveur MYSQL a échoué'
+        throw 'la création de la règle firewall du serveur MYSQL a échoué'
     }
     else {
-        Write-Host "La régle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
+        Write-Host "La règle du firewall mySQL a été créée avec succès" -ForegroundColor Magenta
     }
 }
 
@@ -278,7 +287,6 @@ $allOutput >> "$Log_Path"
 catch {
     $stderr = $allOutput | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
     Write-Host "In CATCH"
-    Write-Host $stderr -ForegroundColor Red
     $allOutput >> "$Log_Path"
 
     Write-Host "les ressources Azure créées vont être supprimées!" -ForegroundColor DarkRed
