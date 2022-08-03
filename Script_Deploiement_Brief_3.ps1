@@ -1,16 +1,14 @@
 az extension add -n ssh
 
-$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
-
 $Month = Get-Date -Format 'MM'
 $Year = Get-Date -Format "yyyy"
 $Day = Get-Date -Format "dd"
 $hour = Get-Date -Format "HH:mm"
 $allOutput = "$hour`nLancement du script:`n"
-$Log_Path = "..\Deploiement_Gitea_$Year$Month$Day.log"
-$step = 9
+$Log_Path = "..\log\Deploiement_Gitea_$Year$Month$Day.log"
+$step = 0
 $Zone = 'francecentral'
-$RessourceGroupName = 'GiteaFirst'
+$RessourceGroupName = 'Giteathird'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
@@ -22,7 +20,7 @@ $NameservDB = 'giteasqlsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 $NameDB = 'gitea'
-$Dns_Name = 'giteafirst'
+$Dns_Name = 'giteathird'
 #ajouter une fonction pour passer $NameservDB en minuscule
 
 try {
