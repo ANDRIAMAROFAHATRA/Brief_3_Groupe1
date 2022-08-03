@@ -249,24 +249,10 @@ if ($step -lt 11){
     }
 }
 
-#----------------------OUVERTURE DES PORTS----------------------------
+#----------------------OUVERTURE DU PORT 3000----------------------------
 
-if ($step -lt 12) {
-    $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
-        --port 443 `
-        --priority 800 2>&1
-    $CommandStatus = $?
-    $hour = Get-Date -Format "HH:mm"
-    $allOutput += "`nEtape 12`n$hour`n$sortie`n"
-    if ($CommandStatus -eq $false) {
-            throw "Ouverture du port 443 a échoué"
-        }
-        else {
-            Write-Host "Le port 443 a été créé avec succès" -ForegroundColor Yellow
-        }
-    }
 
-    if ($step -lt 13) {
+    if ($step -lt 12) {
         $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
             --port 3000 `
             --priority 700 2>&1
