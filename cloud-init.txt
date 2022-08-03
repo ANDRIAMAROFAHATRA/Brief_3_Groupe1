@@ -89,9 +89,9 @@ write_files:
           HOST     = giteasqlsrv.mysql.database.azure.com:3306
           NAME     = gitea
           USER     = Gitea@giteasqlsrv
-          PASSWD   = MOTDEPASSE
+          PASSWD   = @@MOTDEPASSE@@
           SCHEMA   =
-          SSL_MODE = enable
+          SSL_MODE = true
           CHARSET  = utf8mb4
           PATH     = /var/lib/gitea/data/gitea.db
           LOG_SQL  = false
@@ -161,4 +161,5 @@ runcmd:
     - [ sudo, chmod, +x, gitea ]
     - [ sudo, cp, gitea, "/usr/local/bin/gitea" ]
     - [ sudo, cp, gitea, "/usr/local/bin/data" ]
-    - [ sudo, systemctl, enable, gitea, --now ]
+    - [ sudo, systemctl, enable, gitea ]
+    - [ sudo, systemctl, start, gitea ]
