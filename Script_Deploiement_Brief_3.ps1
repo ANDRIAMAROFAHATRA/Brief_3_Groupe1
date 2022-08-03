@@ -11,10 +11,10 @@ $Log_Path = "..\log\Deploiement_Gitea_$Year$Month$Day.log"
 
 #------------Variables d'infrastructure------------------------
 
-$step = 9
+$step = 0
 
 $Zone = 'francecentral'
-$RessourceGroupName = 'GiteaThird'
+$RessourceGroupName = 'GiteaFirst'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
@@ -22,14 +22,14 @@ $SubNetAppName = 'GiteaSubnet'
 $PlageIPApp = '10.0.1.0/28'
 $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
-$NameservDB = 'giteasqlsrvturd'
+$NameservDB = 'giteasqlsrv'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 $NameDB = 'gitea'
 
 #----------------variable de developpement----------------
 
-$Dns_Name = 'giteathird'
+$Dns_Name = 'giteafirst'
 #ajouter une fonction pour passer $NameservDB en minuscule
 
 try {
@@ -43,10 +43,10 @@ if ($step -lt 1 ) {
 $sortie = az group create `
 -l $Zone `
 -n $RessourceGroupName 2>&1
-$echec = $?
+$CommandStatus = $?
 $hour = Get-Date -Format "HH:mm"
 $allOutput += "`nEtape 1`n$hour`n$sortie`n"
-    if ($echec -eq $false) {
+    if ($CommandStatus -eq $false) {
         throw 'la création du groupe de ressource a échoué'
     }
     else {
@@ -59,9 +59,9 @@ if ($step -lt 2) {
     -g $RessourceGroupName `
     -n $VnetName `
     --address-prefix $PlageIPVnet 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $allOutput += "`nEtape 2`n$hour`n$sortie`n"
-    if ($echec -eq $false) {
+    if ($CommandStatus -eq $false) {
         throw 'la création du Vnet GiteaVnet a échoué'
     }
     else {
@@ -76,10 +76,10 @@ $sortie = az network vnet subnet create `
     --vnet-name $VnetName `
     --name AzureBastionSubnet `
     --address-prefixes $PlageIPBastion 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 3`n$hour`n$sortie`n"
-    if ($echec -eq $false) {
+    if ($CommandStatus -eq $false) {
         throw 'la création du Subnet SubnetBastion a échoué'
     }
     else {
@@ -92,10 +92,10 @@ $sortie = az network vnet subnet create `
     --vnet-name $VnetName `
     --name $SubNetAppName `
     --address-prefixes $PlageIPApp 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 4`n$hour`n$sortie`n"
-    if ($echec -eq $false) {
+    if ($CommandStatus -eq $false) {
         throw 'la création du Subnet GiteaSubnet a échoué'
     }
     else {
@@ -109,10 +109,10 @@ $sortie = az network public-ip create `
     -g $RessourceGroupName `
     -n $NameIPBastion `
     --sku Standard -z 1 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 5`n$hour`n$sortie`n"
-     if ($echec -eq $false) {
+     if ($CommandStatus -eq $false) {
         throw "la création de l'IP public Bastion a échoué"
     }
     else {
@@ -130,10 +130,10 @@ $sortie = az network bastion create `
 	--public-ip-address $NameIPBastion `
 	-g $RessourceGroupName `
     --vnet-name $VnetName 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 6`n$hour`n$sortie`n"
-     if ($echec -eq $false) {
+     if ($CommandStatus -eq $false) {
         throw 'la création du service Bastion a échoué'
     }
     else {
@@ -149,10 +149,10 @@ $IdBastion = az network bastion list --only-show-errors -g $RessourceGroupName -
 #---------------------Tunnelling bastion ------------------------------
 if ($step -lt 7) {
 $sortie = az resource update --ids $IdBastion --set properties.enableTunneling=True 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 7`n$hour`n$sortie`n"
-if ($echec -eq $false) {
+if ($CommandStatus -eq $false) {
         throw 'Activation du tunnel Bastion échoué'
     }
     else {
@@ -177,10 +177,10 @@ $sortie = az mysql server create -l $Zone `
     --tags "key=value" `
     --version 5.7 `
     --only-show-errors 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 8`n$hour`n$sortie`n"
-    if ($echec -eq $false) {
+    if ($CommandStatus -eq $false) {
         throw 'la création du serveur MYSQL a échoué'
     }
     else {
@@ -195,10 +195,10 @@ if ($step -lt 9){
     --charset utf8mb4 `
     --collation utf8mb4_general_ci `
     -s $NameservDB 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 9`n$hour`n$sortie`n"
-    if ($echec -eq $false) {
+    if ($CommandStatus -eq $false) {
         throw 'la création de la database Gitea a échoué'
     }
     else {
@@ -218,10 +218,10 @@ if ($step -lt 10) {
         --public-ip-address-dns-name $Dns_Name `
         --size Standard_B2s `
         --custom-data cloud-init.txt 2>&1
-        $echec = $?
+        $CommandStatus = $?
         $hour = Get-Date -Format "HH:mm"
         $allOutput += "`nEtape 10`n$hour`n$sortie`n"
-    if ($echec -eq $false) {
+    if ($CommandStatus -eq $false) {
             throw 'la création de la VM a échoué'
         }
         else {
@@ -239,10 +239,10 @@ if ($step -lt 11){
         -n IpGiteaDB `
         --start-ip-address $ipserver `
         --end-ip-address $ipserver 2>&1
-     $echec = $?
+     $CommandStatus = $?
      $hour = Get-Date -Format "HH:mm"
      $allOutput += "`nEtape 11`n$hour`n$sortie`n"
-     if ($echec -eq $false) {
+     if ($CommandStatus -eq $false) {
         throw 'la création de la règle firewall du serveur MYSQL a échoué'
     }
     else {
@@ -256,10 +256,10 @@ if ($step -lt 12) {
     $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
         --port 443 `
         --priority 800 2>&1
-    $echec = $?
+    $CommandStatus = $?
     $hour = Get-Date -Format "HH:mm"
     $allOutput += "`nEtape 12`n$hour`n$sortie`n"
-    if ($echec -eq $false) {
+    if ($CommandStatus -eq $false) {
             throw "Ouverture du port 443 a échoué"
         }
         else {
@@ -271,10 +271,10 @@ if ($step -lt 12) {
         $sortie = az vm open-port -n $NameVM -g $RessourceGroupName `
             --port 3000 `
             --priority 700 2>&1
-        $echec = $?
+        $CommandStatus = $?
         $hour = Get-Date -Format "HH:mm"
         $allOutput += "`nEtape 13`n$hour`n$sortie`n"
-        if ($echec -eq $false) {
+        if ($CommandStatus -eq $false) {
                 throw "Ouverture du port 3000 a échoué"
             }
             else {
