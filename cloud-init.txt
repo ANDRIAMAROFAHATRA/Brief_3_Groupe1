@@ -161,4 +161,5 @@ runcmd:
     - [ sudo, chmod, +x, gitea ]
     - [ sudo, cp, gitea, "/usr/local/bin/gitea" ]
     - [ sudo, cp, gitea, "/usr/local/bin/data" ]
-    - [ sudo, systemctl, enable, gitea, --now ]
+    - [ sudo, systemctl, enable, gitea ]
+    - [ sudo, systemctl, start, gitea ]

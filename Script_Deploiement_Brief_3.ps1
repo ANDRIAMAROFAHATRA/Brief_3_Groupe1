@@ -207,7 +207,7 @@ if ($step -lt 9){
 }
 
 #----------------------CREATION DE LA VM GITEA----------------------------
-(Get-Content .\cloud-init.txt) -replace 'PASSWD   = @@MOTDEPASSE@@', "PASSWD   = $Env:passwdSQL" | Out-File .\cloud-init.txt
+(Get-Content .\cloud-init.txt) -replace 'PASSWD   = @@MOTDEPASSE@@', "PASSWD   = $Env:passwdSQL" | Out-File -Encoding ascii .\cloud-init.txt
 
 if ($step -lt 10) {
     $sortie = az vm create -n $NameVM -g $RessourceGroupName `
@@ -228,7 +228,7 @@ if ($step -lt 10) {
             Write-Host "La VM a été créé avec succès" -ForegroundColor Yellow
         }
     }
-(Get-Content .\cloud-init.txt) -replace "PASSWD   = $Env:passwdSQL", 'PASSWD   = @@MOTDEPASSE@@' | Out-File .\cloud-init.txt
+(Get-Content .\cloud-init.txt) -replace "PASSWD   = $Env:passwdSQL", 'PASSWD   = @@MOTDEPASSE@@' | Out-File -Encoding ascii .\cloud-init.txt
 #--------------------------firewall_MySQL---------------------------------------------
     $ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
 
