@@ -11,10 +11,10 @@ $Log_Path = "..\log\Deploiement_Gitea_$Year$Month$Day.log"
 
 #------------Variables d'infrastructure------------------------
 
-$step = 0
+$step = 9
 
 $Zone = 'francecentral'
-$RessourceGroupName = 'GiteaFirst2'
+$RessourceGroupName = 'GiteaThird'
 $VnetName = 'GiteaVnet'
 $PlageIPVnet = '10.0.1.0/24'
 $PlageIPBastion = '10.0.1.64/26'
@@ -22,14 +22,14 @@ $SubNetAppName = 'GiteaSubnet'
 $PlageIPApp = '10.0.1.0/28'
 $NameIPBastion = 'MyFirstPublicIpBastion'
 $NameBastion = 'Bastion'
-$NameservDB = 'giteasqlsrv'
+$NameservDB = 'giteasqlsrvturd'
 $NameUserDB = 'Gitea'
 $NameVM = 'VMGitea'
 $NameDB = 'gitea'
 
 #----------------variable de developpement----------------
 
-$Dns_Name = 'giteafirst'
+$Dns_Name = 'giteathird'
 #ajouter une fonction pour passer $NameservDB en minuscule
 
 try {
@@ -207,7 +207,7 @@ if ($step -lt 9){
 }
 
 #----------------------CREATION DE LA VM GITEA----------------------------
-#(Get-Content .\cloud-init2.txt) -replace 'PASSWD   = MOTDEPASSE', "PASSWD   = $Env:passwdSQL" | Out-File .\cloud-init2.txt
+(Get-Content .\cloud-init.txt) -replace 'PASSWD   = @@MOTDEPASSE@@', "PASSWD   = $Env:passwdSQL" | Out-File .\cloud-init.txt
 
 if ($step -lt 10) {
     $sortie = az vm create -n $NameVM -g $RessourceGroupName `
@@ -228,7 +228,7 @@ if ($step -lt 10) {
             Write-Host "La VM a été créé avec succès" -ForegroundColor Yellow
         }
     }
-    #(Get-Content .\cloud-init2.txt) -replace "PASSWD   = $Env:passwdSQL", 'PASSWD   = MOTDEPASSE' | Out-File .\cloud-init2.txt
+(Get-Content .\cloud-init.txt) -replace "PASSWD   = $Env:passwdSQL", 'PASSWD   = @@MOTDEPASSE@@' | Out-File .\cloud-init.txt
 #--------------------------firewall_MySQL---------------------------------------------
     $ipserver = az vm show -d --resource-group $RessourceGroupName -n $NameVM --query publicIps -o tsv
 
@@ -285,7 +285,6 @@ $allOutput >> "$Log_Path"
 }
 
 catch {
-    $stderr = $allOutput | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
     Write-Host "In CATCH"
     $allOutput >> "$Log_Path"
 
